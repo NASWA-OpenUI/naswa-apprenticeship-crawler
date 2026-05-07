@@ -36,3 +36,6 @@ htmlcov/
 .DS_Store
 .vscode/
 .idea/
+
+# Pages we download
+html/
