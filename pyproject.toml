@@ -5,7 +5,9 @@ description = "A small Scrapy crawler project for apprenticeship announcements."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "scrapy"
+    "scrapy",
+    "beautifulsoup4 (>=4.14.3,<5.0.0)",
+    "markdownify (>=1.2.2,<2.0.0)"
 ]
 
 [build-system]
