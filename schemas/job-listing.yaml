@@ -1,0 +1,65 @@
+JobListing:
+  # Source/original posting
+  id: string
+  sourcePostingId?: string | null
+  sourceUrl?: string | null
+  sourceTitle: string # Use source_title from markdown front matter / page H1
+
+  # Main listing fields
+  jobTitle: string
+  numberOfOpenings: number
+  sponsorName: string
+  unionName?: string | null
+  locationSummary: string
+  regions: string[]
+
+  # Dates
+  recruitmentStartDate: date # YYYY-MM-DD
+  recruitmentEndDate: date # YYYY-MM-DD
+  applicationStartDate: date # YYYY-MM-DD; default to recruitmentStartDate if not separately stated
+  applicationEndDate: date # YYYY-MM-DD; this is the application deadline; default to recruitmentEndDate if not separately stated
+
+  # Application overview
+  applicationMethods:
+    - online_application
+    - email_application
+    - mail_application
+    - in_person_application
+    - phone_application
+    - appointment_required
+    - information_session_required
+
+  applicationSummary: string
+  applicationWebsite?: string | null
+  applicationEmail?: string | null
+  applicationPhone?: string | null
+  applicationInPersonAddress?: string | null
+  applicationMailingAddress?: string | null
+  applicationHours?: string | null
+
+  # Application limits
+  applicationLimit?: number | null
+  applicationLimitDetails?: string | null
+
+  # Application fee
+  applicationFee?: number | null
+  applicationFeeDetails?: string | null
+
+  # Common requirements
+  ageRequirement?: string | null
+  educationRequirement?: string | null
+  residencyRequirement?: string | null
+  transportationRequirement?: string | null # Includes reliable transportation, travel, and driver's license requirements
+  drugTestRequirement?: string | null
+  classRequirement?: string | null
+
+  # Full requirements
+  allRequirements: string[]
+  requirementsSummary: string
+
+  # Primary further-information contact
+  contactName?: string | null
+  contactPhone?: string | null
+  contactEmail?: string | null
+  contactWebsite?: string | null
+  contactSummary?: string | null

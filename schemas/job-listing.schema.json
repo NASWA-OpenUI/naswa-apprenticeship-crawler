@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Apprenticeship Job Listing",
+  "description": "A flattened apprenticeship job listing extracted from a source posting. This schema represents one browsable job listing record for a glanceable job listings page, not a complete duplication of the original posting.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "sourcePostingId",
+    "sourceUrl",
+    "sourceTitle",
+    "rawText",
+    "jobTitle",
+    "numberOfOpenings",
+    "sponsorName",
+    "unionName",
+    "locationSummary",
+    "regions",
+    "recruitmentStartDate",
+    "recruitmentEndDate",
+    "applicationStartDate",
+    "applicationEndDate",
+    "applicationMethods",
+    "applicationSummary",
+    "applicationWebsite",
+    "applicationEmail",
+    "applicationPhone",
+    "applicationInPersonAddress",
+    "applicationMailingAddress",
+    "applicationHours",
+    "applicationLimit",
+    "applicationLimitDetails",
+    "applicationFee",
+    "applicationFeeDetails",
+    "ageRequirement",
+    "educationRequirement",
+    "residencyRequirement",
+    "transportationRequirement",
+    "drugTestRequirement",
+    "classRequirement",
+    "allRequirements",
+    "requirementsSummary",
+    "contactName",
+    "contactPhone",
+    "contactEmail",
+    "contactWebsite",
+    "contactSummary"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique slug-style ID for this job listing record. If one source posting contains multiple jobs, create a distinct ID for each job listing, such as the source posting ID plus a job-title slug."
+    },
+    "sourcePostingId": {
+      "type": ["string", "null"],
+      "description": "ID linking this listing back to the original source posting. Use the source file stem if no better source posting ID exists."
+    },
+    "sourceUrl": {
+      "type": ["string", "null"],
+      "description": "URL of the original source posting, if present in the markdown front matter or source text."
+    },
+    "sourceTitle": {
+      "type": "string",
+      "description": "Title of the original source posting. Use the source_title value from the markdown front matter, which corresponds to the page H1."
+    },
+    "rawText": {
+      "type": ["string", "null"],
+      "description": "Original raw posting text. Set to null unless explicitly instructed to preserve it."
+    },
+
+    "jobTitle": {
+      "type": "string",
+      "description": "Specific apprenticeship job title for this listing, such as 'Carpenter Apprentice' or 'Glazier Apprentice'. If one source posting lists multiple job types, create a separate record for each job title."
+    },
+    "numberOfOpenings": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of openings for this specific job title only."
+    },
+    "sponsorName": {
+      "type": "string",
+      "description": "Name of the sponsoring organization, apprenticeship committee, or training fund responsible for the recruitment."
+    },
+    "unionName": {
+      "type": ["string", "null"],
+      "description": "Union name, local number, district, or similar union affiliation, if applicable and separately identifiable from the sponsor name."
+    },
+    "locationSummary": {
+      "type": "string",
+      "description": "Short plain-language summary of where the opportunity is located or who it serves geographically. Prefer a concise user-facing summary, such as 'White Plains, NY area', 'Western and Central New York', or 'Capital District, Hudson Valley, Mohawk Valley, North Country, and Southern Tier'."
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Official recruitment regions named in the posting, if any. Use [] when the posting does not identify recruitment regions. Do not use this field for long county-by-county residency lists; put those in residencyRequirement instead."
+    },
+
+    "recruitmentStartDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Recruitment start date in YYYY-MM-DD format."
+    },
+    "recruitmentEndDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Recruitment end date in YYYY-MM-DD format."
+    },
+    "applicationStartDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Application start date in YYYY-MM-DD format. If the posting does not give a separate application start date, use the recruitmentStartDate."
+    },
+    "applicationEndDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Application end date in YYYY-MM-DD format. This is the application deadline. If the posting does not give a separate application end date, use the recruitmentEndDate."
+    },
+
+    "applicationMethods": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "online_application",
+          "email_application",
+          "mail_application",
+          "in_person_application",
+          "phone_application",
+          "appointment_required",
+          "information_session_required"
+        ]
+      },
+      "description": "High-level methods used in the application process. Include application channels the applicant must or may use, plus required prerequisite steps. Use values ending in _application only when the applicant can actually request, obtain, complete, or submit the application through that channel. For example, if someone must request an application by email and return it by mail, include both 'email_application' and 'mail_application'. If attendance at an information session is required before applying, include 'information_session_required'. Do not include 'phone_application' just because a phone number is listed for help. Do not include duplicate values."
+    },
+    "applicationSummary": {
+      "type": "string",
+      "description": "Short plain-language summary of how to apply, written for a glanceable listing page. Include the main path and any major required step, but do not try to reproduce every procedural detail from the original posting."
+    },
+
+    "applicationWebsite": {
+      "type": ["string", "null"],
+      "description": "Website where applications are available, submitted, or where the applicant is directed to apply."
+    },
+    "applicationEmail": {
+      "type": ["string", "null"],
+      "description": "Email address used to request or submit an application, if applicable."
+    },
+    "applicationPhone": {
+      "type": ["string", "null"],
+      "description": "Phone number specifically related to applying or getting help with the application process, if present. Do not use this field for the general further-information contact unless it is also clearly application-related."
+    },
+    "applicationInPersonAddress": {
+      "type": ["string", "null"],
+      "description": "Address where applications can be picked up, completed, or submitted in person, if applicable."
+    },
+    "applicationMailingAddress": {
+      "type": ["string", "null"],
+      "description": "Mailing address for completed applications or application materials, if applicable."
+    },
+    "applicationHours": {
+      "type": ["string", "null"],
+      "description": "Plain-language application hours, if the posting specifies hours for obtaining, completing, or submitting applications."
+    },
+
+    "applicationLimit": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Maximum number of applications available or accepted, if the posting states a clear numeric application limit. Use null when there is no application limit."
+    },
+    "applicationLimitDetails": {
+      "type": ["string", "null"],
+      "description": "Plain-language explanation of any application limit, such as first-come-first-served rules, limited-application recruitment, or whether recruitment ends when the limit is reached."
+    },
+
+    "applicationFee": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Total application-related fee amount in USD, including required testing fees when they are part of the application process. Use null when there is no application-related fee or when no single clear amount can be stated."
+    },
+    "applicationFeeDetails": {
+      "type": ["string", "null"],
+      "description": "Plain-language explanation of application-related fees, including the components of the fee, payment method, fee waiver availability, non-refundable language, or other important fee rules."
+    },
+
+    "ageRequirement": {
+      "type": ["string", "null"],
+      "description": "Plain-language age requirement, if one is stated."
+    },
+    "educationRequirement": {
+      "type": ["string", "null"],
+      "description": "Plain-language education requirement, including accepted alternatives such as GED, TASC, HSE, trade experience, or other substitutions when they are part of the education rule."
+    },
+    "residencyRequirement": {
+      "type": ["string", "null"],
+      "description": "Plain-language residency, jurisdiction, county, radius, or geographic eligibility requirement, if one is stated."
+    },
+    "transportationRequirement": {
+      "type": ["string", "null"],
+      "description": "Plain-language requirement related to transportation, travel, or driver's license. Combine reliable transportation, travel expectations, and driver's license requirements into this one field."
+    },
+    "drugTestRequirement": {
+      "type": ["string", "null"],
+      "description": "Plain-language drug or alcohol testing requirement, if one is stated."
+    },
+    "classRequirement": {
+      "type": ["string", "null"],
+      "description": "Plain-language requirement related to attending classes, approved school, related instruction, or apprenticeship training sessions."
+    },
+    "allRequirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "All applicant requirements from the posting, including requirements that are also summarized in the common requirement fields. Use this as the fuller requirements list for a details or accordion view. Preserve important details, but lightly clean the text for readability."
+    },
+    "requirementsSummary": {
+      "type": "string",
+      "description": "Short plain-language summary of the major requirements, written for a glanceable listing page. This should summarize the requirements, not duplicate the full allRequirements list."
+    },
+
+    "contactName": {
+      "type": ["string", "null"],
+      "description": "Display name for the further-information contact, usually the organization named in the posting rather than a person."
+    },
+    "contactPhone": {
+      "type": ["string", "null"],
+      "description": "Phone number for further information about the opportunity."
+    },
+    "contactEmail": {
+      "type": ["string", "null"],
+      "description": "Email address for further information about the opportunity, if provided."
+    },
+    "contactWebsite": {
+      "type": ["string", "null"],
+      "description": "Primary website for further information about this apprenticeship opportunity, if provided. Do not use the generic New York State Department of Labor Career Center URL unless it is the only website provided."
+    },
+    "contactSummary": {
+      "type": ["string", "null"],
+      "description": "Short plain-language summary of the primary further-information contact. Do not include generic New York State Department of Labor Career Center assistance unless it is the only contact information provided."
+    }
+  }
+}
