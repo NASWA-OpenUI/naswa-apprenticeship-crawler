@@ -8,9 +8,6 @@ __pycache__/
 venv/
 env/
 
-# Poetry
-poetry.lock
-
 # Scrapy
 .scrapy/
 
