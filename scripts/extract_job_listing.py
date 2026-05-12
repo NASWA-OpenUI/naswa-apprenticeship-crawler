@@ -16,6 +16,9 @@ from openai import OpenAI
 # - write a script to determine if there are 1 or more jobs
 
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
 # -----------------------------
 # Manually tweak these for now
 # -----------------------------
@@ -23,9 +26,9 @@ from openai import OpenAI
 MODEL = "gpt-5.4-mini"
 REASONING_EFFORT = "medium"
 
-MARKDOWN_PATH = Path("./markdown/westchester-fairfield-jeatc-lu-3-ibew-1.md")
-SCHEMA_PATH = Path("./schemas/job-listing.schema.json")
-OUTPUT_ROOT = Path("./json")
+MARKDOWN_PATH = PROJECT_ROOT / "markdown/westchester-fairfield-jeatc-lu-3-ibew-1.md"
+SCHEMA_PATH = PROJECT_ROOT / "schemas/job-listing.schema.json"
+OUTPUT_ROOT = PROJECT_ROOT / "json"
 
 MAX_ATTEMPTS = 3
 

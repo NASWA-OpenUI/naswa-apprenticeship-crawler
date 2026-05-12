@@ -4,17 +4,18 @@ Extracts structured frontmatter from the page hero and news body, then markdowni
 the press-body content.
 
 Usage:
-    poetry run python convert_to_markdown.py
+    poetry run python scripts/convert_to_markdown.py
 """
 
-import os
 from pathlib import Path
 
 from bs4 import BeautifulSoup
 from markdownify import markdownify
 
-HTML_DIR = Path("html")
-MD_DIR = Path("markdown")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+HTML_DIR = PROJECT_ROOT / "html"
+MD_DIR = PROJECT_ROOT / "markdown"
 BASE_URL = "https://dol.ny.gov/news"
 
 
@@ -70,6 +71,7 @@ def extract_fields(soup: BeautifulSoup) -> dict:
 def build_frontmatter(source_file: str, fields: dict) -> str:
     slug = source_file.replace(".html", "")
     source_url = f"{BASE_URL}/{slug}"
+
     lines = [
         "---",
         f"source_file: {source_file}",
@@ -79,18 +81,21 @@ def build_frontmatter(source_file: str, fields: dict) -> str:
         f"location: {fields['location']}",
         "---",
     ]
+
     return "\n".join(lines)
 
 
 def convert_file(html_path: Path, md_path: Path) -> None:
-    with open(html_path, encoding="utf-8") as f:
+    with html_path.open("r", encoding="utf-8") as f:
         soup = BeautifulSoup(f, "html.parser")
 
     fields = extract_fields(soup)
     frontmatter = build_frontmatter(html_path.name, fields)
 
     body_md = markdownify(
-        fields["body_html"], heading_style="ATX", strip=["script", "style"]
+        fields["body_html"],
+        heading_style="ATX",
+        strip=["script", "style"],
     ).strip()
 
     heading = (
@@ -98,6 +103,7 @@ def convert_file(html_path: Path, md_path: Path) -> None:
         if fields["announcement_heading"]
         else ""
     )
+
     parts = [frontmatter, heading, body_md]
     output = "\n\n".join(p for p in parts if p)
 
@@ -105,18 +111,20 @@ def convert_file(html_path: Path, md_path: Path) -> None:
     print(f"Converted: {html_path.name} -> {md_path.name}")
 
 
-def main():
+def main() -> None:
     MD_DIR.mkdir(exist_ok=True)
+
     html_files = sorted(HTML_DIR.glob("*.html"))
+
     if not html_files:
-        print("No HTML files found in html/")
+        print(f"No HTML files found in {HTML_DIR}")
         return
 
     for html_path in html_files:
         md_path = MD_DIR / html_path.name.replace(".html", ".md")
         convert_file(html_path, md_path)
 
-    print(f"\nDone. {len(html_files)} file(s) converted to markdown/")
+    print(f"\nDone. {len(html_files)} file(s) converted to {MD_DIR}")
 
 
 if __name__ == "__main__":
