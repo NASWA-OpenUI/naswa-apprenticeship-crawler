@@ -6,10 +6,8 @@
   "additionalProperties": false,
   "required": [
     "id",
-    "sourcePostingId",
     "sourceUrl",
     "sourceTitle",
-    "rawText",
     "jobTitle",
     "numberOfOpenings",
     "sponsorName",
@@ -49,11 +47,7 @@
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique slug-style ID for this job listing record. If one source posting contains multiple jobs, create a distinct ID for each job listing, such as the source posting ID plus a job-title slug."
-    },
-    "sourcePostingId": {
-      "type": ["string", "null"],
-      "description": "ID linking this listing back to the original source posting. Use the source file stem if no better source posting ID exists."
+      "description": "Unique slug-style ID for this job listing record. If one source posting contains multiple jobs, create a distinct ID for each job listing, usually by combining the source URL slug with a job-title slug."
     },
     "sourceUrl": {
       "type": ["string", "null"],
@@ -62,10 +56,6 @@
     "sourceTitle": {
       "type": "string",
       "description": "Title of the original source posting. Use the source_title value from the markdown front matter, which corresponds to the page H1."
-    },
-    "rawText": {
-      "type": ["string", "null"],
-      "description": "Original raw posting text. Set to null unless explicitly instructed to preserve it."
     },
 
     "jobTitle": {

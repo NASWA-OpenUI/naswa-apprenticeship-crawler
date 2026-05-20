@@ -1,7 +1,6 @@
 JobListing:
   # Source/original posting
   id: string
-  sourcePostingId?: string | null
   sourceUrl?: string | null
   sourceTitle: string # Use source_title from markdown front matter / page H1
 

@@ -58,7 +58,6 @@ Important rules:
   - Use appointment_required when an individual scheduled appointment is required as part of applying.
   - Use information_session_required when a group information session is required before applying.
 - Extract only the primary further-information contact for the apprenticeship opportunity. Do not include generic NYSDOL Career Center job-search assistance in the contact fields unless no apprenticeship-specific contact is provided.
-- Set rawText to null.
 - Keep summaries short and useful for a job listing page.
 - The goal is a glanceable overview, not a full duplication of the original posting.
 """.strip()
@@ -198,8 +197,6 @@ Extract one apprenticeship job listing from the markdown below.
 
 Source file name: {source_file.name}
 Source file stem: {source_file.stem}
-
-Use the source file stem as sourcePostingId if no better source posting ID exists.
 
 Markdown:
 
