@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -9,16 +10,6 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
 from openai import OpenAI
 
-# Notes
-# - ids should be created predictably
-# - add raw text
-# - test a few models
-# - write a script to determine if there are 1 or more jobs
-
-
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-
-
 # -----------------------------
 # Manually tweak these for now
 # -----------------------------
@@ -26,24 +17,30 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODEL = "gpt-5.4-mini"
 REASONING_EFFORT = "medium"
 
-MARKDOWN_PATH = PROJECT_ROOT / "markdown/westchester-fairfield-jeatc-lu-3-ibew-1.md"
-SCHEMA_PATH = PROJECT_ROOT / "schemas/job-listing.schema.json"
-OUTPUT_ROOT = PROJECT_ROOT / "json"
+MARKDOWN_PATH = Path("./markdown/bricklayers-allied-craftworkers-local-2-albany-0.md")
+SCHEMA_PATH = Path("./schemas/job-listing.schema.json")
+OUTPUT_ROOT = Path("./json")
 
 MAX_ATTEMPTS = 3
 
 SYSTEM_PROMPT = """
 You extract structured apprenticeship job listing data from markdown versions of public job postings.
 
-Return exactly one JSON object that matches the provided schema.
+Return exactly one JSON object with a jobListings array. Each item in jobListings must match the JobListing schema.
 
 Important rules:
-- Create one browsable job listing record.
+- Create one complete JobListing object per distinct apprenticeship job title/opening listed in the posting.
+- If the posting lists only one job title, return a jobListings array with one object.
+- If the posting lists multiple job titles with separate opening counts, return multiple complete JobListing objects.
+- For multi-job postings, duplicate the shared source, sponsor, location, recruitment, application, requirement, and contact information across each object.
+- For multi-job postings, only id, jobTitle, and numberOfOpenings usually differ between records unless the posting clearly states job-specific differences.
 - Do not invent facts.
 - Use null when a nullable field is not present or cannot be confidently extracted.
 - Use [] for array fields when no values are found.
 - Dates must use YYYY-MM-DD format.
+- Use the source_url value from the markdown front matter for sourceUrl.
 - Use the source_title value from the markdown front matter for sourceTitle.
+- Create id as a stable slug-style job listing ID. If the source posting contains multiple jobs, combine the source URL/file slug with a job-title slug.
 - If the posting does not give separate application dates, use recruitmentStartDate as applicationStartDate and recruitmentEndDate as applicationEndDate.
 - applicationEndDate is the application deadline.
 - Use plain-language strings for requirement fields.
@@ -66,14 +63,17 @@ Important rules:
 def main() -> None:
     load_dotenv()
 
-    schema = load_schema(SCHEMA_PATH)
-    validator = Draft202012Validator(schema)
+    job_listing_schema = load_schema(SCHEMA_PATH)
+    job_listing_validator = Draft202012Validator(job_listing_schema)
+
+    response_schema = build_response_schema(job_listing_schema)
+    response_validator = Draft202012Validator(response_schema)
 
     markdown_text = read_markdown(MARKDOWN_PATH)
-    output_path = build_output_path()
+    output_dir = build_output_dir()
 
-    if output_path.exists():
-        print(f"Skipping existing output: {output_path}")
+    if output_dir.exists() and any(output_dir.glob("*.json")):
+        print(f"Skipping existing output directory: {output_dir}")
         return
 
     client = OpenAI()
@@ -84,23 +84,24 @@ def main() -> None:
         print(f"Attempt {attempt} of {MAX_ATTEMPTS}...")
 
         try:
-            data = extract_job_listing(
+            response_data = extract_job_listings(
                 client=client,
-                schema=schema,
+                response_schema=response_schema,
                 markdown_text=markdown_text,
                 source_file=MARKDOWN_PATH,
             )
 
-            data = dedupe_lists(data)
-            validate_output(validator, data)
+            validate_response(response_validator, response_data)
 
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            output_path.write_text(
-                json.dumps(data, indent=2, ensure_ascii=False) + "\n",
-                encoding="utf-8",
-            )
+            job_listings = response_data["jobListings"]
 
-            print(f"Saved: {output_path}")
+            for job_listing in job_listings:
+                dedupe_lists(job_listing)
+                validate_job_listing(job_listing_validator, job_listing)
+
+            save_job_listings(output_dir=output_dir, job_listings=job_listings)
+
+            print(f"Saved {len(job_listings)} job listing(s) to: {output_dir}")
             return
 
         except Exception as exc:
@@ -128,8 +129,8 @@ def read_markdown(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def build_output_path() -> Path:
-    return OUTPUT_ROOT / MODEL / REASONING_EFFORT / f"{MARKDOWN_PATH.stem}.json"
+def build_output_dir() -> Path:
+    return OUTPUT_ROOT / MODEL / REASONING_EFFORT / MARKDOWN_PATH.stem
 
 
 def dedupe_lists(data: dict[str, Any]) -> dict[str, Any]:
@@ -144,10 +145,10 @@ def dedupe_lists(data: dict[str, Any]) -> dict[str, Any]:
     return data
 
 
-def extract_job_listing(
+def extract_job_listings(
     *,
     client: OpenAI,
-    schema: dict[str, Any],
+    response_schema: dict[str, Any],
     markdown_text: str,
     source_file: Path,
 ) -> dict[str, Any]:
@@ -170,9 +171,9 @@ def extract_job_listing(
         text={
             "format": {
                 "type": "json_schema",
-                "name": "job_listing",
+                "name": "job_listings_response",
                 "strict": True,
-                "schema": schema_for_openai(schema),
+                "schema": schema_for_openai(response_schema),
             }
         },
     )
@@ -193,23 +194,45 @@ def extract_job_listing(
 
 def build_user_prompt(*, markdown_text: str, source_file: Path) -> str:
     return f"""
-Extract one apprenticeship job listing from the markdown below.
+Extract one or more complete apprenticeship job listings from the markdown below.
 
 Source file name: {source_file.name}
 Source file stem: {source_file.stem}
 
-Markdown:
+If the source posting lists one job title, return one item in jobListings.
 
-```markdown
+If the source posting lists multiple job titles with separate opening counts, return one complete item in jobListings for each job title. Each item must be a full standalone job listing suitable for a spreadsheet row.
+
+<markdown>
 {markdown_text}
-```
-
+</markdown>
 """.strip()
+
+
+def build_response_schema(job_listing_schema: dict[str, Any]) -> dict[str, Any]:
+    """
+    Build the temporary model-response schema.
+
+    The saved files still use the normal JobListing schema directly.
+    This wrapper only lets one model call return one or more complete listings.
+    """
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["jobListings"],
+        "properties": {
+            "jobListings": {
+                "type": "array",
+                "items": schema_for_openai(job_listing_schema),
+                "description": "One or more complete JobListing records extracted from the source posting.",
+            }
+        },
+    }
 
 
 def schema_for_openai(schema: dict[str, Any]) -> dict[str, Any]:
     """
-    The local schema file can include metadata such as $schema, title, and description.
+    The local schema file can include metadata such as $schema, $id, title, and description.
     The OpenAI Structured Outputs call only needs the actual schema shape.
     """
     return {
@@ -219,18 +242,66 @@ def schema_for_openai(schema: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def validate_output(
+def validate_response(
     validator: Draft202012Validator,
     data: dict[str, Any],
 ) -> None:
     try:
         validator.validate(data)
     except ValidationError as exc:
-        path = ".".join(str(part) for part in exc.absolute_path)
-        location = path or "<root>"
-        raise ValueError(
-            f"JSON failed schema validation at {location}: {exc.message}"
-        ) from exc
+        raise_validation_error("response", exc)
+
+
+def validate_job_listing(
+    validator: Draft202012Validator,
+    data: dict[str, Any],
+) -> None:
+    try:
+        validator.validate(data)
+    except ValidationError as exc:
+        listing_id = data.get("id", "<missing id>")
+        raise_validation_error(f"job listing {listing_id}", exc)
+
+
+def raise_validation_error(label: str, exc: ValidationError) -> None:
+    path = ".".join(str(part) for part in exc.absolute_path)
+    location = path or "<root>"
+    raise ValueError(
+        f"JSON failed schema validation for {label} at {location}: {exc.message}"
+    ) from exc
+
+
+def save_job_listings(
+    *,
+    output_dir: Path,
+    job_listings: list[dict[str, Any]],
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    for job_listing in job_listings:
+        listing_id = job_listing["id"]
+        filename = f"{slugify(listing_id)}.json"
+        output_path = output_dir / filename
+
+        if output_path.exists():
+            raise FileExistsError(f"Refusing to overwrite existing file: {output_path}")
+
+        output_path.write_text(
+            json.dumps(job_listing, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+
+
+def slugify(value: str) -> str:
+    value = value.lower().strip()
+    value = re.sub(r"[^a-z0-9]+", "-", value)
+    value = re.sub(r"-+", "-", value)
+    value = value.strip("-")
+
+    if not value:
+        raise ValueError("Could not create a valid filename slug.")
+
+    return value
 
 
 if __name__ == "__main__":
