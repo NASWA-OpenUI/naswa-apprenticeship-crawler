@@ -12,9 +12,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # Manually tweak this for now
 # -----------------------------
 
-# JSON_FOLDER = PROJECT_ROOT / "json/gpt-5.4-mini/medium"
-JSON_FOLDER = PROJECT_ROOT / "json/manual"
-OUTPUT_FILENAME = "job-listings.csv"
+JSON_ROOT = PROJECT_ROOT / "json/gpt-5.4-mini/medium"
+
+CSV_DIR = PROJECT_ROOT / "csv"
+OUTPUT_FILENAME = "apprenticeship-announcements.csv"
 
 
 def csv_safe_value(value: Any) -> str:
@@ -23,7 +24,7 @@ def csv_safe_value(value: Any) -> str:
 
     - None becomes an empty string
     - lists/dicts become compact JSON strings
-    - everything else becomes a plain string/value
+    - everything else becomes the original scalar value
     """
     if value is None:
         return ""
@@ -34,10 +35,13 @@ def csv_safe_value(value: Any) -> str:
     return value
 
 
-def load_json_entries(json_folder: Path) -> list[dict[str, Any]]:
+def load_json_entries(json_root: Path) -> list[dict[str, Any]]:
+    """
+    Recursively load every JSON file under json_root and return each JSON object as a row.
+    """
     entries: list[dict[str, Any]] = []
 
-    for json_path in sorted(json_folder.glob("*.json")):
+    for json_path in sorted(json_root.rglob("*.json")):
         with json_path.open("r", encoding="utf-8") as f:
             data = json.load(f)
 
@@ -75,6 +79,8 @@ def get_fieldnames(entries: list[dict[str, Any]]) -> list[str]:
 def write_csv(entries: list[dict[str, Any]], output_path: Path) -> None:
     fieldnames = get_fieldnames(entries)
 
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
     with output_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -88,19 +94,19 @@ def write_csv(entries: list[dict[str, Any]], output_path: Path) -> None:
 
 
 def main() -> None:
-    if not JSON_FOLDER.exists():
-        raise FileNotFoundError(f"Folder does not exist: {JSON_FOLDER}")
+    if not JSON_ROOT.exists():
+        raise FileNotFoundError(f"Folder does not exist: {JSON_ROOT}")
 
-    if not JSON_FOLDER.is_dir():
-        raise NotADirectoryError(f"Path is not a folder: {JSON_FOLDER}")
+    if not JSON_ROOT.is_dir():
+        raise NotADirectoryError(f"Path is not a folder: {JSON_ROOT}")
 
-    entries = load_json_entries(JSON_FOLDER)
+    entries = load_json_entries(JSON_ROOT)
 
     if not entries:
-        print(f"No JSON entries found in {JSON_FOLDER}")
+        print(f"No JSON entries found in {JSON_ROOT}")
         return
 
-    output_path = JSON_FOLDER / OUTPUT_FILENAME
+    output_path = CSV_DIR / OUTPUT_FILENAME
     write_csv(entries, output_path)
 
     print(f"Wrote {len(entries)} rows to {output_path}")
