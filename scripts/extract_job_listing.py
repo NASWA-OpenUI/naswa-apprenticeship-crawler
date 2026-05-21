@@ -14,10 +14,20 @@ from openai import OpenAI
 # Manually tweak these for now
 # -----------------------------
 
+
+# Set MARKDOWN_PATH to process one specific markdown file.
+# Set MARKDOWN_PATH = None and MARKDOWN_DIR to process every *.md file in that directory.
+# If both are set, MARKDOWN_PATH wins because single-file extraction is cheaper and useful for testing.
+
+# MARKDOWN_PATH = Path(
+#     "./markdown/bricklayers-allied-craftworkers-local-2-albany-0.md"
+# )
+MARKDOWN_PATH = None
+MARKDOWN_DIR = Path("./markdown")
+
 MODEL = "gpt-5.4-mini"
 REASONING_EFFORT = "medium"
 
-MARKDOWN_PATH = Path("./markdown/bricklayers-allied-craftworkers-local-2-albany-0.md")
 SCHEMA_PATH = Path("./schemas/job-listing.schema.json")
 OUTPUT_ROOT = Path("./json")
 
@@ -61,6 +71,11 @@ Important rules:
 
 
 def main() -> None:
+    """
+    Load schemas, choose markdown files to process, and extract each posting into JSON.
+
+    Processing continues across files so one failure does not stop the whole batch.
+    """
     load_dotenv()
 
     job_listing_schema = load_schema(SCHEMA_PATH)
@@ -69,26 +84,114 @@ def main() -> None:
     response_schema = build_response_schema(job_listing_schema)
     response_validator = Draft202012Validator(response_schema)
 
-    markdown_text = read_markdown(MARKDOWN_PATH)
-    output_dir = build_output_dir()
-
-    if output_dir.exists() and any(output_dir.glob("*.json")):
-        print(f"Skipping existing output directory: {output_dir}")
-        return
+    markdown_files = get_markdown_files()
 
     client = OpenAI()
+
+    failures: list[tuple[Path, Exception]] = []
+    processed_count = 0
+    skipped_count = 0
+
+    print(f"Found {len(markdown_files)} markdown file(s) to process.")
+
+    for markdown_path in markdown_files:
+        output_dir = build_output_dir(markdown_path)
+
+        if output_dir.exists() and any(output_dir.glob("*.json")):
+            print(f"Skipping existing output directory: {output_dir}")
+            skipped_count += 1
+            continue
+
+        try:
+            process_markdown_file(
+                client=client,
+                markdown_path=markdown_path,
+                output_dir=output_dir,
+                response_schema=response_schema,
+                response_validator=response_validator,
+                job_listing_validator=job_listing_validator,
+            )
+            processed_count += 1
+
+        except Exception as exc:
+            print(f"FAILED: {markdown_path.name}: {exc}")
+            failures.append((markdown_path, exc))
+
+    print()
+    print("Done.")
+    print(f"Processed: {processed_count}")
+    print(f"Skipped:   {skipped_count}")
+    print(f"Failed:    {len(failures)}")
+
+    if failures:
+        print()
+        print("Failures:")
+        for markdown_path, exc in failures:
+            print(f"- {markdown_path}: {exc}")
+
+        raise RuntimeError(f"{len(failures)} markdown file(s) failed.")
+
+
+def get_markdown_files() -> list[Path]:
+    """
+    Decide which markdown files to process.
+
+    MARKDOWN_PATH wins over MARKDOWN_DIR because single-file extraction is cheaper
+    and is useful for testing one posting at a time.
+    """
+    if MARKDOWN_PATH is not None:
+        if not MARKDOWN_PATH.exists():
+            raise FileNotFoundError(f"Markdown file not found: {MARKDOWN_PATH}")
+
+        if not MARKDOWN_PATH.is_file():
+            raise ValueError(f"MARKDOWN_PATH is not a file: {MARKDOWN_PATH}")
+
+        return [MARKDOWN_PATH]
+
+    if MARKDOWN_DIR is not None:
+        if not MARKDOWN_DIR.exists():
+            raise FileNotFoundError(f"Markdown directory not found: {MARKDOWN_DIR}")
+
+        if not MARKDOWN_DIR.is_dir():
+            raise ValueError(f"MARKDOWN_DIR is not a directory: {MARKDOWN_DIR}")
+
+        markdown_files = sorted(MARKDOWN_DIR.glob("*.md"))
+
+        if not markdown_files:
+            raise FileNotFoundError(f"No markdown files found in: {MARKDOWN_DIR}")
+
+        return markdown_files
+
+    raise ValueError("Set either MARKDOWN_PATH or MARKDOWN_DIR.")
+
+
+def process_markdown_file(
+    *,
+    client: OpenAI,
+    markdown_path: Path,
+    output_dir: Path,
+    response_schema: dict[str, Any],
+    response_validator: Draft202012Validator,
+    job_listing_validator: Draft202012Validator,
+) -> None:
+    """
+    Extract, validate, and save job listing JSON for one markdown file.
+
+    The model call is retried up to MAX_ATTEMPTS times if extraction or validation fails.
+    """
+    markdown_text = read_markdown(markdown_path)
 
     last_error: Exception | None = None
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        print(f"Attempt {attempt} of {MAX_ATTEMPTS}...")
+        print(f"{markdown_path.name}: attempt {attempt} of {MAX_ATTEMPTS}...")
 
         try:
             response_data = extract_job_listings(
                 client=client,
                 response_schema=response_schema,
                 markdown_text=markdown_text,
-                source_file=MARKDOWN_PATH,
+                source_file=markdown_path,
             )
 
             validate_response(response_validator, response_data)
@@ -106,7 +209,7 @@ def main() -> None:
 
         except Exception as exc:
             last_error = exc
-            print(f"Attempt {attempt} failed: {exc}")
+            print(f"{markdown_path.name}: attempt {attempt} failed: {exc}")
 
     raise RuntimeError(
         f"Failed to extract valid job listing JSON after {MAX_ATTEMPTS} attempts."
@@ -114,6 +217,7 @@ def main() -> None:
 
 
 def load_schema(path: Path) -> dict[str, Any]:
+    """Load a JSON Schema file and validate that the schema itself is well formed."""
     if not path.exists():
         raise FileNotFoundError(f"Schema file not found: {path}")
 
@@ -123,17 +227,20 @@ def load_schema(path: Path) -> dict[str, Any]:
 
 
 def read_markdown(path: Path) -> str:
+    """Read a markdown source file as UTF-8 text."""
     if not path.exists():
         raise FileNotFoundError(f"Markdown file not found: {path}")
 
     return path.read_text(encoding="utf-8")
 
 
-def build_output_dir() -> Path:
-    return OUTPUT_ROOT / MODEL / REASONING_EFFORT / MARKDOWN_PATH.stem
+def build_output_dir(markdown_path: Path) -> Path:
+    """Build the output directory for one source file using model, effort, and file stem."""
+    return OUTPUT_ROOT / MODEL / REASONING_EFFORT / markdown_path.stem
 
 
 def dedupe_lists(data: dict[str, Any]) -> dict[str, Any]:
+    """Remove duplicate values from known list fields while preserving their original order."""
     for key in [
         "applicationMethods",
         "regions",
@@ -152,6 +259,11 @@ def extract_job_listings(
     markdown_text: str,
     source_file: Path,
 ) -> dict[str, Any]:
+    """
+    Call the OpenAI Responses API to extract one or more job listings from markdown.
+
+    The response is constrained to the temporary jobListings wrapper schema.
+    """
     response = client.responses.create(
         model=MODEL,
         reasoning={"effort": REASONING_EFFORT},
@@ -193,6 +305,7 @@ def extract_job_listings(
 
 
 def build_user_prompt(*, markdown_text: str, source_file: Path) -> str:
+    """Build the user prompt for one source markdown file."""
     return f"""
 Extract one or more complete apprenticeship job listings from the markdown below.
 
@@ -246,6 +359,7 @@ def validate_response(
     validator: Draft202012Validator,
     data: dict[str, Any],
 ) -> None:
+    """Validate the full model response against the temporary wrapper schema."""
     try:
         validator.validate(data)
     except ValidationError as exc:
@@ -256,6 +370,7 @@ def validate_job_listing(
     validator: Draft202012Validator,
     data: dict[str, Any],
 ) -> None:
+    """Validate one extracted job listing against the saved JobListing schema."""
     try:
         validator.validate(data)
     except ValidationError as exc:
@@ -264,6 +379,7 @@ def validate_job_listing(
 
 
 def raise_validation_error(label: str, exc: ValidationError) -> None:
+    """Raise a readable validation error that includes the failing schema path."""
     path = ".".join(str(part) for part in exc.absolute_path)
     location = path or "<root>"
     raise ValueError(
@@ -276,6 +392,11 @@ def save_job_listings(
     output_dir: Path,
     job_listings: list[dict[str, Any]],
 ) -> None:
+    """
+    Save each extracted job listing as an individual JSON file.
+
+    Existing files are not overwritten, so reruns do not accidentally replace prior output.
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for job_listing in job_listings:
