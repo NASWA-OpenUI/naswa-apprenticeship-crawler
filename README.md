@@ -1,10 +1,10 @@
 # NASWA Apprenticeship Crawler
 
-A small Poetry project for using Scrapy to crawl apprenticeship announcement pages and save source content locally for later parsing and analysis.
+A small Poetry project that crawls NY DOL apprenticeship announcements, converts them to Markdown, extracts structured data via OpenAI, and exports the results to CSV.
 
 ## Getting started
 
-**Prerequisites:** Python 3.14+ and [Poetry](https://python-poetry.org/docs/#installation).
+**Prerequisites:** Python 3.14+ and [Poetry](https://python-poetry.org/docs/#installation). An OpenAI API key is required for Step 3.
 
 ```bash
 # Clone the repo
@@ -16,32 +16,47 @@ poetry install
 
 # Activate the virtual environment
 poetry shell
+
+# Copy and fill in your OpenAI API key
+cp .env.example .env
 ```
 
 ## Usage
 
-**Step 1 — Crawl:** Run the Scrapy spider to fetch posting pages and save them as HTML files in `html/`.
+**Step 1 — Crawl:** Fetch all announcement pages from the [NY DOL announcements listing](https://dol.ny.gov/apprenticeship/apprenticeship-announcements) and save them as HTML files in `html/`. Already-saved files are skipped.
 
 ```bash
 scrapy crawl announcements
 ```
 
-**Step 2 — Convert:** Parse the saved HTML files and convert them to Markdown in `markdown/`.
+**Step 2 — Convert to Markdown:** Parse the saved HTML files and write them to `markdown/` with YAML frontmatter (`source_file`, `source_url`, `source_title`, `date_posted`, `location`) and a Markdown body.
 
 ```bash
-python convert_to_markdown.py
+python scripts/convert_to_markdown.py
 ```
 
-## What this app does
+**Step 3 — Extract structured data:** Send each Markdown file to the OpenAI Responses API (default: `gpt-5.4-mini`, reasoning effort `medium`) and save one JSON file per job listing under `json/<model>/<effort>/<posting-slug>/`. Postings that already have output are skipped; failed extractions are retried up to 3 times and reported at the end.
 
-1. **Crawls apprenticeship announcements** — a Scrapy spider hits the NY DOL apprenticeship announcements listing page, follows links to individual posting pages, and saves each page as an HTML file in `html/`.
+```bash
+python scripts/extract_job_listing.py
+```
 
-2. **Converts HTML to Markdown** — `convert_to_markdown.py` reads each saved HTML file, extracts structured fields from the page (date posted, location, announcement title, job heading) into YAML frontmatter, converts the posting body to Markdown, and writes the result to `markdown/`.
+To process a single file instead of the whole `markdown/` directory, set `MARKDOWN_PATH` near the top of `extract_job_listing.py`.
 
-The end result is a local collection of clean, readable Markdown files — one per posting.
+**Step 4 — Export to CSV:** Recursively read every JSON file under `json/gpt-5.4-mini/medium/` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
 
-## Coming soon
+```bash
+python scripts/json_to_csv.py
+```
 
-**Structured data extraction** — parse the Markdown postings and pull out specific data elements into a structured format (CSV or JSON). This will let us treat the postings as tabular data rather than text blobs, making it easier to filter, sort, and analyze across all listings.
+To export from a different model/effort folder, update `JSON_ROOT` near the top of `json_to_csv.py`.
 
-Which fields to extract and the best approach for doing so are currently being worked out.
+## Output layout
+
+```
+html/          # raw HTML pages from the crawler (one file per announcement)
+markdown/      # converted Markdown files with YAML frontmatter
+json/          # extracted job listings, organized by model/effort/posting-slug/
+csv/           # final CSV export
+schemas/       # JSON Schema used to validate extracted job listings
+```
