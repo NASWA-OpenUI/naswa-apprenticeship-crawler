@@ -6,6 +6,7 @@ JobListing:
 
   # Main listing fields
   jobTitle: string
+  socCode: string # Not present in announcement post, this is manually added later
   numberOfOpenings: number
   sponsorName: string
   unionName?: string | null

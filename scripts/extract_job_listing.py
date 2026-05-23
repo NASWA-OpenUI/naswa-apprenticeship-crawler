@@ -51,6 +51,7 @@ Important rules:
 - Use the source_url value from the markdown front matter for sourceUrl.
 - Use the source_title value from the markdown front matter for sourceTitle.
 - Create id as a stable slug-style job listing ID. If the source posting contains multiple jobs, combine the source URL/file slug with a job-title slug.
+- Set socCode to null unless an O*NET-SOC code is explicitly present in the markdown.
 - If the posting does not give separate application dates, use recruitmentStartDate as applicationStartDate and recruitmentEndDate as applicationEndDate.
 - applicationEndDate is the application deadline.
 - Use plain-language strings for requirement fields.

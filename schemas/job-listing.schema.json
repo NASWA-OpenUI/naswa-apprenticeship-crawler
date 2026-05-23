@@ -9,6 +9,7 @@
     "sourceUrl",
     "sourceTitle",
     "jobTitle",
+    "socCode",
     "numberOfOpenings",
     "sponsorName",
     "unionName",
@@ -61,6 +62,11 @@
     "jobTitle": {
       "type": "string",
       "description": "Specific apprenticeship job title for this listing, such as 'Carpenter Apprentice' or 'Glazier Apprentice'. If one source posting lists multiple job types, create a separate record for each job title."
+    },
+    "socCode": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{2}-\\d{4}\\.\\d{2}$",
+      "description": "O*NET-SOC code for this job listing, such as '47-2061.00'. This value is not usually present in the source posting and should be set to null during AI extraction unless explicitly provided. It may be added manually later."
     },
     "numberOfOpenings": {
       "type": "integer",
