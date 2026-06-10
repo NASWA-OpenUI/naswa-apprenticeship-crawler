@@ -36,6 +36,7 @@ htmlcov/
 
 # Pages we download
 html/
+html-archived/
 markdown/
 json/
 onet/
