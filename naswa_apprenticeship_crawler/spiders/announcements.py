@@ -1,5 +1,7 @@
+import json
 import re
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 import scrapy
@@ -9,7 +11,20 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 HTML_DIR = ROOT_DIR / "html"
 ARCHIVE_DIR = ROOT_DIR / "html-archived"
 
+MANIFEST_DIR = ROOT_DIR / "manifests"
+MANIFEST_PATH = MANIFEST_DIR / "announcements.json"
+
 LISTINGS_URL = "https://dol.ny.gov/apprenticeship/apprenticeship-announcements"
+
+
+def utc_now() -> str:
+    """Return a stable UTC timestamp for manifest metadata."""
+    return (
+        datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 
 def url_to_filename(url: str) -> str:
@@ -35,16 +50,73 @@ def unique_archive_path(path: Path) -> Path:
     raise RuntimeError(f"Could not find unique archive path for {path}")
 
 
+def load_manifest() -> dict:
+    """Load the crawler manifest, or create a new empty one."""
+    if not MANIFEST_PATH.exists():
+        return {
+            "version": 1,
+            "source": LISTINGS_URL,
+            "postings": {},
+        }
+
+    data = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+
+    data.setdefault("version", 1)
+    data.setdefault("source", LISTINGS_URL)
+    data.setdefault("postings", {})
+
+    return data
+
+
+def save_manifest(manifest: dict) -> None:
+    """Write the manifest atomically."""
+    MANIFEST_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Keep the file stable and diff-friendly.
+    manifest = dict(manifest)
+    postings = manifest.get("postings", {})
+    manifest["postings"] = {
+        filename: postings[filename]
+        for filename in sorted(postings)
+    }
+
+    tmp_path = MANIFEST_PATH.with_suffix(".tmp")
+    tmp_path.write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    tmp_path.replace(MANIFEST_PATH)
+
+
+def relative_to_root(path: Path) -> str:
+    try:
+        return path.relative_to(ROOT_DIR).as_posix()
+    except ValueError:
+        return str(path)
+
+
 class AnnouncementsSpider(scrapy.Spider):
     name = "announcements"
     start_urls = [LISTINGS_URL]
 
-    def __init__(self, archive_missing: str = "false", *args, **kwargs):
+    def __init__(
+        self,
+        archive_missing: str = "false",
+        refresh_existing: str = "false",
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
 
         self.archive_missing = str_to_bool(archive_missing)
+
+        self.refresh_existing = str_to_bool(refresh_existing)
+
         self.existing_files: set[str] = set()
         self.seen_files: set[str] = set()
+
+        self.manifest: dict = {}
+        self.run_started_at = ""
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -58,6 +130,11 @@ class AnnouncementsSpider(scrapy.Spider):
     def spider_opened(self, spider):
         HTML_DIR.mkdir(parents=True, exist_ok=True)
 
+        self.run_started_at = utc_now()
+        self.manifest = load_manifest()
+        self.manifest["source"] = LISTINGS_URL
+        self.manifest["last_run_started_at"] = self.run_started_at
+
         self.existing_files = {path.name for path in HTML_DIR.glob("*.html")}
 
         self.logger.info(
@@ -65,6 +142,37 @@ class AnnouncementsSpider(scrapy.Spider):
             len(self.existing_files),
             HTML_DIR,
         )
+
+        self.logger.info("Using manifest: %s", MANIFEST_PATH)
+
+    def record_current_posting(
+        self,
+        *,
+        filename: str,
+        url: str,
+        listing_page_url: str,
+        status: int | None = None,
+    ) -> None:
+        """Record one posting as current in the manifest."""
+        postings = self.manifest.setdefault("postings", {})
+        existing = postings.get(filename, {})
+
+        record = {
+            "filename": filename,
+            "url": url,
+            "listing_page_url": listing_page_url,
+            "archived": False,
+            "first_seen_at": existing.get("first_seen_at") or self.run_started_at,
+            "last_seen_at": self.run_started_at,
+        }
+
+        if status is not None:
+            record["status"] = status
+        elif existing.get("status") is not None:
+            record["status"] = existing["status"]
+
+        postings[filename] = record
+        self.seen_files.add(filename)
 
     def parse(self, response):
         # Collect posting links from the listing cards.
@@ -75,20 +183,33 @@ class AnnouncementsSpider(scrapy.Spider):
         self.logger.info("Found %d posting links on %s", len(links), response.url)
 
         for href in links:
-            url = response.urljoin(href)
-            filename = url_to_filename(url)
-
-            # This is the key point:
-            # mark the file as still active even if we already have it locally.
-            self.seen_files.add(filename)
+            request_url = response.urljoin(href)
+            filename = url_to_filename(request_url)
 
             dest = HTML_DIR / filename
 
-            if dest.exists():
+            if dest.exists() and not self.refresh_existing:
+                existing_record = self.manifest.get("postings", {}).get(filename, {})
+
+                self.record_current_posting(
+                    filename=filename,
+                    url=existing_record.get("url") or request_url,
+                    listing_page_url=response.url,
+                    status=existing_record.get("status"),
+                )
+
                 self.logger.info("Already saved, skipping: %s", filename)
                 continue
 
-            yield scrapy.Request(url, callback=self.save_page)
+            yield scrapy.Request(
+                request_url,
+                callback=self.save_page,
+                meta={
+                    "request_url": request_url,
+                    "request_filename": filename,
+                    "listing_page_url": response.url,
+                },
+            )
 
         # Follow the site's own pagination.
         # The page has both mobile and desktop pagers, so pick one stable selector first.
@@ -102,53 +223,114 @@ class AnnouncementsSpider(scrapy.Spider):
             yield response.follow(next_href, callback=self.parse)
 
     def save_page(self, response):
-        filename = url_to_filename(response.url)
+        request_url = response.meta.get("request_url", response.url)
+        request_filename = response.meta.get(
+            "request_filename",
+            url_to_filename(request_url),
+        )
+        listing_page_url = response.meta.get("listing_page_url", "")
+
+        url = response.url
+        filename = url_to_filename(url)
+
         dest = HTML_DIR / filename
 
         HTML_DIR.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(response.body)
 
+        self.record_current_posting(
+            filename=filename,
+            url=url,
+            listing_page_url=listing_page_url,
+            status=response.status,
+        )
+
+        if filename != request_filename or url.rstrip("/") != request_url.rstrip("/"):
+            self.logger.info(
+                "Redirected while saving: requested=%s final=%s",
+                request_url,
+                url,
+            )
+
         self.logger.info("Saved %s (%d bytes)", filename, len(response.body))
+
+    def mark_archived_manifest_records(self, finished_at: str) -> None:
+        """Mark manifest records archived if they were not seen in this completed run."""
+        postings = self.manifest.setdefault("postings", {})
+
+        for filename, record in postings.items():
+            if filename in self.seen_files:
+                continue
+
+            if not record.get("archived"):
+                record["archived"] = True
+                record["archived_at"] = finished_at
+
+            record["last_not_seen_at"] = finished_at
+            record["archive_reason"] = "not_seen_on_live_listing"
 
     def spider_closed(self, spider, reason):
         if reason != "finished":
             self.logger.warning(
-                "Spider closed with reason=%s. Not archiving missing files.",
+                "Spider closed with reason=%s. Not archiving missing files or saving manifest changes.",
                 reason,
             )
             return
 
+        finished_at = utc_now()
+
         missing_files = sorted(self.existing_files - self.seen_files)
+
+        # This updates the manifest even if archive_missing=false.
+        # archive_missing only controls whether the physical html file is moved.
+        self.mark_archived_manifest_records(finished_at)
 
         if not missing_files:
             self.logger.info("No deprecated local HTML files found.")
-            return
-
-        self.logger.warning(
-            "Found %d existing HTML files that were not seen on the live listing:",
-            len(missing_files),
-        )
-
-        for filename in missing_files:
-            self.logger.warning("Deprecated candidate: %s", filename)
-
-        if not self.archive_missing:
+        else:
             self.logger.warning(
-                "Dry run only. Re-run with -a archive_missing=true to move these to %s",
+                "Found %d existing HTML files that were not seen on the live listing:",
+                len(missing_files),
+            )
+
+            for filename in missing_files:
+                self.logger.warning("Deprecated candidate: %s", filename)
+
+        if missing_files and not self.archive_missing:
+            self.logger.warning(
+                "Dry run only. Manifest was updated, but files were not moved. "
+                "Re-run with -a archive_missing=true to move these to %s",
                 ARCHIVE_DIR,
             )
-            return
 
-        ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
+        if missing_files and self.archive_missing:
+            ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
 
-        for filename in missing_files:
-            src = HTML_DIR / filename
+            for filename in missing_files:
+                src = HTML_DIR / filename
 
-            if not src.exists():
-                self.logger.warning("File disappeared before archiving: %s", src)
-                continue
+                if not src.exists():
+                    self.logger.warning("File disappeared before archiving: %s", src)
+                    continue
 
-            dest = unique_archive_path(ARCHIVE_DIR / filename)
-            shutil.move(str(src), str(dest))
+                dest = unique_archive_path(ARCHIVE_DIR / filename)
+                shutil.move(str(src), str(dest))
 
-            self.logger.info("Archived %s -> %s", src, dest)
+                record = self.manifest.setdefault("postings", {}).get(filename)
+                if record is not None:
+                    record["archive_path"] = relative_to_root(dest)
+                    record["file_archived_at"] = finished_at
+
+                self.logger.info("Archived %s -> %s", src, dest)
+
+        postings = self.manifest.setdefault("postings", {})
+        self.manifest["last_run_finished_at"] = finished_at
+        self.manifest["last_run_reason"] = reason
+        self.manifest["current_count"] = len(self.seen_files)
+        self.manifest["archived_count"] = sum(
+            1 for record in postings.values() if record.get("archived")
+        )
+
+        save_manifest(self.manifest)
+
+        self.logger.info("Manifest saved to %s", MANIFEST_PATH)

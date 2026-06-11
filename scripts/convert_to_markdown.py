@@ -1,12 +1,15 @@
 """
-Reads HTML files from html/ and converts each one to a Markdown file in markdown/.
-Extracts structured frontmatter from the page hero and news body, then markdownifies
-the press-body content.
+Reads current HTML files listed in manifests/announcements.json and converts each
+one to a Markdown file in markdown/.
+
+Archived manifest records are skipped. The markdown frontmatter uses the DOL
+page URL captured in the manifest as source_url.
 
 Usage:
     poetry run python scripts/convert_to_markdown.py
 """
 
+import json
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -16,7 +19,48 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 HTML_DIR = PROJECT_ROOT / "html"
 MD_DIR = PROJECT_ROOT / "markdown"
+MANIFEST_PATH = PROJECT_ROOT / "manifests" / "announcements.json"
+
 BASE_URL = "https://dol.ny.gov/news"
+
+
+def load_manifest() -> dict:
+    if not MANIFEST_PATH.exists():
+        raise FileNotFoundError(
+            f"Manifest not found: {MANIFEST_PATH}\n"
+            "Run the announcements spider first."
+        )
+
+    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+
+    if not isinstance(manifest.get("postings"), dict):
+        raise ValueError(f"Manifest is missing a valid postings object: {MANIFEST_PATH}")
+
+    return manifest
+
+
+def get_current_html_files(manifest: dict) -> list[tuple[Path, dict]]:
+    """
+    Return only non-archived HTML files from the manifest.
+
+    Archived postings are intentionally not converted to markdown, so they do not
+    continue down the pipeline.
+    """
+    records = []
+
+    for filename, record in sorted(manifest["postings"].items()):
+        if record.get("archived"):
+            continue
+
+        html_path = HTML_DIR / filename
+
+        if not html_path.exists():
+            print(f"Skipping missing HTML file from manifest: {filename}")
+            continue
+
+        records.append((html_path, record))
+
+    return records
 
 
 def extract_fields(soup: BeautifulSoup) -> dict:
@@ -51,7 +95,7 @@ def extract_fields(soup: BeautifulSoup) -> dict:
         press_body = news_body.select_one("div.press-body")
         if press_body:
             if not announcement_heading:
-                # Fall back to first heading inside press-body
+                # Fall back to first heading inside press-body.
                 heading_el = press_body.find(["h1", "h2", "h3"])
                 if heading_el:
                     announcement_heading = heading_el.get_text(strip=True)
@@ -68,9 +112,11 @@ def extract_fields(soup: BeautifulSoup) -> dict:
     }
 
 
-def build_frontmatter(source_file: str, fields: dict) -> str:
+def build_frontmatter(source_file: str, fields: dict, manifest_record: dict) -> str:
     slug = source_file.replace(".html", "")
-    source_url = f"{BASE_URL}/{slug}"
+
+    # Prefer the URL captured by the crawler manifest.
+    source_url = manifest_record.get("url") or f"{BASE_URL}/{slug}"
 
     lines = [
         "---",
@@ -85,12 +131,12 @@ def build_frontmatter(source_file: str, fields: dict) -> str:
     return "\n".join(lines)
 
 
-def convert_file(html_path: Path, md_path: Path) -> None:
+def convert_file(html_path: Path, md_path: Path, manifest_record: dict) -> None:
     with html_path.open("r", encoding="utf-8") as f:
         soup = BeautifulSoup(f, "html.parser")
 
     fields = extract_fields(soup)
-    frontmatter = build_frontmatter(html_path.name, fields)
+    frontmatter = build_frontmatter(html_path.name, fields, manifest_record)
 
     body_md = markdownify(
         fields["body_html"],
@@ -114,17 +160,18 @@ def convert_file(html_path: Path, md_path: Path) -> None:
 def main() -> None:
     MD_DIR.mkdir(exist_ok=True)
 
-    html_files = sorted(HTML_DIR.glob("*.html"))
+    manifest = load_manifest()
+    current_files = get_current_html_files(manifest)
 
-    if not html_files:
-        print(f"No HTML files found in {HTML_DIR}")
+    if not current_files:
+        print("No current HTML files found in manifest.")
         return
 
-    for html_path in html_files:
+    for html_path, manifest_record in current_files:
         md_path = MD_DIR / html_path.name.replace(".html", ".md")
-        convert_file(html_path, md_path)
+        convert_file(html_path, md_path, manifest_record)
 
-    print(f"\nDone. {len(html_files)} file(s) converted to {MD_DIR}")
+    print(f"\nDone. {len(current_files)} current file(s) converted to {MD_DIR}")
 
 
 if __name__ == "__main__":

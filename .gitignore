@@ -41,3 +41,6 @@ markdown/
 json/
 onet/
 out/
+oesdata/soc-comparison/
+scripts/compare_soc_classifications.py
+oesdata/posting-soc-codes.csv

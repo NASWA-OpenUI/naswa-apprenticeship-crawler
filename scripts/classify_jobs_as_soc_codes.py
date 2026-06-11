@@ -14,14 +14,24 @@ from openai import OpenAI
 
 POSTINGS_ROOT = Path("json/gpt-5.4-mini/medium")
 SOC_CODES_CSV_PATH = Path("oesdata/soccodes.csv")
-OUTPUT_CSV_PATH = Path("oesdata/job-soc-codes.csv")
+
+# New output file because this is now one row per extracted posting JSON file,
+# not one row per unique job title.
+OUTPUT_CSV_PATH = Path("oesdata/posting-soc-codes.csv")
 
 MODEL = "gpt-5.4-mini"
 REASONING_EFFORT = "low"
 
 MAX_ATTEMPTS = 3
 
-OUTPUT_FIELDNAMES = ["jobTitle", "socCode", "socTitle"]
+OUTPUT_FIELDNAMES = [
+    "id",
+    "sourceUrl",
+    "sourceTitle",
+    "jobTitle",
+    "socCode",
+    "socTitle",
+]
 
 SYSTEM_PROMPT = """
 You classify apprenticeship job titles into the best matching SOC occupation.
@@ -65,10 +75,10 @@ RESPONSE_SCHEMA: dict[str, Any] = {
 
 def main() -> None:
     """
-    Classify every unique jobTitle from extracted posting JSON files into a SOC code.
+    Classify every extracted posting JSON file into a SOC code.
 
-    Existing rows in oesdata/jobsSocCodes.csv are reused, so reruns only classify
-    new job titles.
+    This writes one output row per extracted posting file, including sourceUrl.
+    Existing rows are reused by posting id, so reruns only classify new files.
     """
     load_dotenv()
 
@@ -85,55 +95,79 @@ def main() -> None:
     soc_titles_by_code = {row["SOCCODE"]: row["SOCTITLE"] for row in soc_rows}
 
     existing_rows = load_existing_rows(OUTPUT_CSV_PATH)
-    existing_job_titles = {row["jobTitle"].strip() for row in existing_rows}
+    existing_keys = {
+        (row["sourceUrl"].strip(), row["id"].strip())
+        for row in existing_rows
+        if row["sourceUrl"].strip() and row["id"].strip()
+    }
 
     posting_files = find_posting_files(POSTINGS_ROOT)
-    job_titles = collect_unique_job_titles(posting_files)
+    postings = collect_postings(posting_files)
 
     client = OpenAI()
+
+    # Avoid duplicate API calls inside a single run. The output still has one row
+    # per posting file, but duplicate job titles can reuse the same classification.
+    classification_cache: dict[str, dict[str, str]] = {}
 
     processed_count = 0
     skipped_count = 0
     failed: list[tuple[str, Exception]] = []
 
     print(f"Found {len(posting_files)} posting JSON file(s).")
-    print(f"Found {len(job_titles)} unique job title(s).")
-    print(f"Found {len(existing_job_titles)} existing classified job title(s).")
+    print(f"Found {len(postings)} usable posting record(s).")
+    print(f"Found {len(existing_rows)} existing classified row(s).")
+    print(f"Writing output to: {OUTPUT_CSV_PATH}")
     print()
 
     ensure_output_file_exists(OUTPUT_CSV_PATH)
 
-    for job_title in job_titles:
-        if job_title in existing_job_titles:
-            print(f"Skipping existing job title: {job_title}")
+    for posting in postings:
+        posting_id = posting["id"]
+        job_title = posting["jobTitle"]
+
+        posting_key = (posting["sourceUrl"], posting_id)
+
+        if posting_key in existing_keys:
+            print(f"Skipping existing posting: {posting_id}")
             skipped_count += 1
             continue
 
         try:
             print(f"Classifying: {job_title}")
+            print(f"  id:  {posting_id}")
+            print(f"  url: {posting['sourceUrl']}")
 
-            result = classify_job_title(
-                client=client,
-                job_title=job_title,
-                soc_codes_csv_text=soc_codes_csv_text,
-                soc_titles_by_code=soc_titles_by_code,
-            )
+            if job_title in classification_cache:
+                result = classification_cache[job_title]
+                print("  using cached classification for duplicate job title")
+            else:
+                result = classify_job_title(
+                    client=client,
+                    job_title=job_title,
+                    soc_codes_csv_text=soc_codes_csv_text,
+                    soc_titles_by_code=soc_titles_by_code,
+                )
+                classification_cache[job_title] = result
 
             row = {
+                "id": posting_id,
+                "sourceUrl": posting["sourceUrl"],
+                "sourceTitle": posting["sourceTitle"],
                 "jobTitle": job_title,
                 "socCode": result["socCode"],
                 "socTitle": result["socTitle"],
             }
 
             append_row(OUTPUT_CSV_PATH, row)
-            existing_job_titles.add(job_title)
+            existing_keys.add(posting_key)
             processed_count += 1
 
             print(f"  → {row['socCode']} {row['socTitle']}")
 
         except Exception as exc:
-            print(f"FAILED: {job_title}: {exc}")
-            failed.append((job_title, exc))
+            print(f"FAILED: {posting_id}: {exc}")
+            failed.append((posting_id, exc))
 
     print()
     print("Done.")
@@ -144,10 +178,10 @@ def main() -> None:
     if failed:
         print()
         print("Failures:")
-        for job_title, exc in failed:
-            print(f"- {job_title}: {exc}")
+        for posting_id, exc in failed:
+            print(f"- {posting_id}: {exc}")
 
-        raise RuntimeError(f"{len(failed)} job title(s) failed classification.")
+        raise RuntimeError(f"{len(failed)} posting(s) failed classification.")
 
 
 def find_posting_files(postings_root: Path) -> list[Path]:
@@ -155,23 +189,40 @@ def find_posting_files(postings_root: Path) -> list[Path]:
     return sorted(path for path in postings_root.glob("*/*.json") if path.is_file())
 
 
-def collect_unique_job_titles(posting_files: list[Path]) -> list[str]:
-    """Collect unique non-empty jobTitle values from posting JSON files."""
-    job_titles: dict[str, None] = {}
+def collect_postings(posting_files: list[Path]) -> list[dict[str, str]]:
+    """Collect one normalized row candidate per extracted posting JSON file."""
+    postings: list[dict[str, str]] = []
 
     for posting_path in posting_files:
         with posting_path.open("r", encoding="utf-8") as file:
             posting = json.load(file)
 
+        posting_id = str(posting.get("id", "")).strip()
+        source_url = str(posting.get("sourceUrl", "")).strip()
+        source_title = str(posting.get("sourceTitle", "")).strip()
         job_title = str(posting.get("jobTitle", "")).strip()
+
+        if not posting_id:
+            print(f"WARNING: missing id in {posting_path}")
+            continue
 
         if not job_title:
             print(f"WARNING: missing jobTitle in {posting_path}")
             continue
 
-        job_titles[job_title] = None
+        if not source_url:
+            print(f"WARNING: missing sourceUrl in {posting_path}")
 
-    return sorted(job_titles.keys())
+        postings.append(
+            {
+                "id": posting_id,
+                "sourceUrl": source_url,
+                "sourceTitle": source_title,
+                "jobTitle": job_title,
+            }
+        )
+
+    return sorted(postings, key=lambda row: (row["sourceUrl"], row["jobTitle"], row["id"]))
 
 
 def load_soc_codes(path: Path) -> list[dict[str, str]]:
@@ -223,7 +274,7 @@ def csv_escape(value: str) -> str:
 
 
 def load_existing_rows(path: Path) -> list[dict[str, str]]:
-    """Load existing output rows so reruns can skip already-classified job titles."""
+    """Load existing output rows so reruns can skip already-classified postings."""
     if not path.exists():
         return []
 
@@ -236,15 +287,21 @@ def load_existing_rows(path: Path) -> list[dict[str, str]]:
             reader.fieldnames = [field.strip() for field in reader.fieldnames]
 
         for row in reader:
+            posting_id = row.get("id", "").strip()
+            source_url = row.get("sourceUrl", "").strip()
+            source_title = row.get("sourceTitle", "").strip()
             job_title = row.get("jobTitle", "").strip()
             soc_code = row.get("socCode", "").strip()
             soc_title = row.get("socTitle", "").strip()
 
-            if not job_title:
+            if not posting_id:
                 continue
 
             rows.append(
                 {
+                    "id": posting_id,
+                    "sourceUrl": source_url,
+                    "sourceTitle": source_title,
                     "jobTitle": job_title,
                     "socCode": soc_code,
                     "socTitle": soc_title,
@@ -265,7 +322,7 @@ def ensure_output_file_exists(path: Path) -> None:
 
 
 def append_row(path: Path, row: dict[str, str]) -> None:
-    """Append one classified job title row to the output CSV."""
+    """Append one classified posting row to the output CSV."""
     with path.open("a", encoding="utf-8", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=OUTPUT_FIELDNAMES)
         writer.writerow(row)

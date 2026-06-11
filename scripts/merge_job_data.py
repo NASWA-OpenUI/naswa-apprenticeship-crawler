@@ -143,9 +143,6 @@ def build_merged_posting(
     oes_soc_code = normalize_soc_code_for_oes(soc_code)
     merged["oes"] = oes_rows_by_soc_code.get(oes_soc_code)
     merged["onet"] = load_onet_data(ONET_ROOT, soc_code)
-    if "7011" in soc_code:
-        print(oes_rows_by_soc_code)
-        print("oes_soc_code", oes_soc_code)
 
     return merged
 
@@ -165,7 +162,6 @@ def main() -> None:
 
     oes_rows_by_soc_code = load_oes_rows(OES_CSV_PATH)
     posting_files = find_posting_files(POSTINGS_ROOT)
-    print("oes_rows_by_soc_code", oes_rows_by_soc_code)
 
     created_count = 0
     missing_soc_code_count = 0

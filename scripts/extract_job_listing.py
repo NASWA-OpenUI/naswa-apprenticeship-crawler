@@ -181,6 +181,13 @@ def process_markdown_file(
     The model call is retried up to MAX_ATTEMPTS times if extraction or validation fails.
     """
     markdown_text = read_markdown(markdown_path)
+    frontmatter = parse_frontmatter(markdown_text)
+
+    source_url = frontmatter.get("source_url")
+    source_title = frontmatter.get("source_title", "")
+
+    if not source_url:
+        raise ValueError(f"{markdown_path.name} is missing source_url in frontmatter.")
 
     last_error: Exception | None = None
 
@@ -199,10 +206,20 @@ def process_markdown_file(
 
             job_listings = response_data["jobListings"]
 
+            seen_ids: dict[str, int] = {}
+
             for job_listing in job_listings:
+                normalize_job_listing(
+                    job_listing,
+                    source_url=source_url,
+                    source_title=source_title,
+                    source_file_stem=markdown_path.stem,
+                    seen_ids=seen_ids,
+                )
+
                 dedupe_lists(job_listing)
                 validate_job_listing(job_listing_validator, job_listing)
-
+                
             save_job_listings(output_dir=output_dir, job_listings=job_listings)
 
             print(f"Saved {len(job_listings)} job listing(s) to: {output_dir}")
@@ -413,6 +430,65 @@ def save_job_listings(
             encoding="utf-8",
         )
 
+
+def parse_frontmatter(markdown_text: str) -> dict[str, str]:
+    """
+    Parse the simple YAML-style frontmatter used by convert_to_markdown.py.
+
+    This intentionally handles only the simple key: value shape we generate.
+    """
+    if not markdown_text.startswith("---\n"):
+        raise ValueError("Markdown file is missing frontmatter.")
+
+    try:
+        _, frontmatter_text, _ = markdown_text.split("---", 2)
+    except ValueError as exc:
+        raise ValueError("Could not parse markdown frontmatter.") from exc
+
+    frontmatter: dict[str, str] = {}
+
+    for line in frontmatter_text.splitlines():
+        line = line.strip()
+
+        if not line or ":" not in line:
+            continue
+
+        key, value = line.split(":", 1)
+        frontmatter[key.strip()] = value.strip().strip('"').strip("'")
+
+    return frontmatter
+
+
+def normalize_job_listing(
+    job_listing: dict[str, Any],
+    *,
+    source_url: str,
+    source_title: str,
+    source_file_stem: str,
+    seen_ids: dict[str, int],
+) -> None:
+    """
+    Force deterministic fields that should not be left to the model.
+    """
+    job_listing["sourceUrl"] = source_url
+
+    if source_title:
+        job_listing["sourceTitle"] = source_title
+
+    job_title = job_listing.get("jobTitle")
+
+    if not isinstance(job_title, str) or not job_title.strip():
+        raise ValueError("Job listing is missing a usable jobTitle.")
+
+    base_id = f"{source_file_stem}-{slugify(job_title)}"
+
+    seen_count = seen_ids.get(base_id, 0)
+    seen_ids[base_id] = seen_count + 1
+
+    if seen_count:
+        job_listing["id"] = f"{base_id}-{seen_count + 1}"
+    else:
+        job_listing["id"] = base_id
 
 def slugify(value: str) -> str:
     value = value.lower().strip()
