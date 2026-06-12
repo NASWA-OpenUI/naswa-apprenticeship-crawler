@@ -34,6 +34,11 @@ htmlcov/
 .vscode/
 .idea/
 
+# Scripts we don't want to commit
+scripts/classify_jobs_as_soc_codes.py
+scripts/compare_soc_classifications.py
+scripts/export_soc_codes.py
+
 # Pages we download
 html/
 html-archived/
@@ -42,5 +47,5 @@ json/
 onet/
 out/
 oesdata/soc-comparison/
-scripts/compare_soc_classifications.py
 oesdata/posting-soc-codes.csv
+oesdata/postings-soc-codes-ai.csv
