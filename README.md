@@ -4,7 +4,7 @@ A small Poetry project that crawls NY DOL apprenticeship announcements, converts
 
 ## Getting started
 
-**Prerequisites:** Python 3.14+ and [Poetry](https://python-poetry.org/docs/#installation). An OpenAI API key is required for Step 3.
+**Prerequisites:** Python 3.14+ and [Poetry](https://python-poetry.org/docs/#installation). An OpenAI API key is required for Step 3 and an O\*NET API key is required for Step 5. Register for O\*NET Web Services at [services.onetcenter.org/developer](https://services.onetcenter.org/developer/).
 
 ```bash
 # Clone the repo
@@ -17,7 +17,7 @@ poetry install
 # Activate the virtual environment
 poetry shell
 
-# Copy and fill in your OpenAI API key
+# Copy and fill in your API keys
 cp .env.example .env
 ```
 
@@ -49,7 +49,41 @@ poetry run python scripts/extract_job_listing.py
 
 To process a single file instead of the whole `markdown/` directory, set `MARKDOWN_PATH` near the top of `extract_job_listing.py`.
 
-**Step 4 — Export to CSV:** Recursively read every JSON file under `json/gpt-5.4-mini/medium/` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
+**Step 4 — Apply SOC codes:** Write O\*NET-SOC codes into the extracted posting JSON files. The source of truth is `oesdata/postings-soc-codes.csv`, a manually maintained CSV that maps each posting URL to its SOC code (`URL`, `ONETSOC_CODE`, `ONETSOC_TITLE` columns).
+
+Start by listing which postings still lack a SOC code:
+
+```bash
+poetry run python scripts/apply_posting_soc_codes.py --mode missing
+```
+
+Once the CSV is populated, audit for disagreements between the JSON and the CSV before writing anything:
+
+```bash
+poetry run python scripts/apply_posting_soc_codes.py --mode audit
+```
+
+When the audit looks clean, apply the SOC codes to the JSON files:
+
+```bash
+poetry run python scripts/apply_posting_soc_codes.py --mode apply
+```
+
+**Step 5 — Fetch O\*NET data:** Download the full O\*NET occupation profile for each SOC code that appears in your postings and save it to `onet/<SOC_CODE>.json`. Pass one or more O\*NET-SOC codes as arguments. Requires `ONET_API_KEY` in your `.env`.
+
+```bash
+poetry run python scripts/fetch_onet_occupation.py 47-2111.00 51-7011.00
+```
+
+Add `--include-summary` to also pull the summary section (omitted by default to keep responses smaller).
+
+**Step 6 — Merge data:** Join each posting JSON file with BLS OES wage data (`oesdata/oesdata.csv`) and the O\*NET occupation profile fetched in Step 5. One merged JSON file per posting is written to `out/`. The script prints a summary of postings that are missing a SOC code, an OES match, or an O\*NET file so you can spot gaps before exporting.
+
+```bash
+poetry run python scripts/merge_job_data.py
+```
+
+**Step 7 — Export to CSV:** Recursively read every JSON file under `json/gpt-5.4-mini/medium/` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
 
 ```bash
 poetry run python scripts/json_to_csv.py
@@ -63,6 +97,9 @@ To export from a different model/effort folder, update `JSON_ROOT` near the top 
 html/          # raw HTML pages from the crawler (one file per announcement)
 markdown/      # converted Markdown files with YAML frontmatter
 json/          # extracted job listings, organized by model/effort/posting-slug/
+onet/          # O*NET occupation profiles, one JSON file per SOC code
+out/           # merged posting records (posting + OES wages + O*NET data)
 csv/           # final CSV export
+oesdata/       # BLS OES wage CSV and the manual postings-soc-codes.csv mapping
 schemas/       # JSON Schema used to validate extracted job listings
 ```
