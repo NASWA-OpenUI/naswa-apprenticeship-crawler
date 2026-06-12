@@ -8,7 +8,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-POSTINGS_ROOT = Path("json/gpt-5.4-mini/medium")
+POSTINGS_ROOT = Path("json")
 SOC_CODES_CSV_PATH = Path("oesdata/postings-soc-codes.csv")
 
 SEPARATOR = "-" * 80

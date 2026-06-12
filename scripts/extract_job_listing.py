@@ -253,9 +253,8 @@ def read_markdown(path: Path) -> str:
 
 
 def build_output_dir(markdown_path: Path) -> Path:
-    """Build the output directory for one source file using model, effort, and file stem."""
-    return OUTPUT_ROOT / MODEL / REASONING_EFFORT / markdown_path.stem
-
+    """Build the output directory for one source markdown file."""
+    return OUTPUT_ROOT / markdown_path.stem
 
 def dedupe_lists(data: dict[str, Any]) -> dict[str, Any]:
     """Remove duplicate values from known list fields while preserving their original order."""

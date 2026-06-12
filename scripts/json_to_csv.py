@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # Manually tweak this for now
 # -----------------------------
 
-JSON_ROOT = PROJECT_ROOT / "json/gpt-5.4-mini/medium"
+JSON_ROOT = PROJECT_ROOT / "json"
 
 CSV_DIR = PROJECT_ROOT / "csv"
 OUTPUT_FILENAME = "apprenticeship-announcements.csv"
@@ -41,7 +41,7 @@ def load_json_entries(json_root: Path) -> list[dict[str, Any]]:
     """
     entries: list[dict[str, Any]] = []
 
-    for json_path in sorted(json_root.rglob("*.json")):
+    for json_path in sorted(json_root.glob("*/*.json")):
         with json_path.open("r", encoding="utf-8") as f:
             data = json.load(f)
 

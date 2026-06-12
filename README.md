@@ -41,7 +41,7 @@ poetry run scrapy crawl announcements -a archive_missing=true
 poetry run python scripts/convert_to_markdown.py
 ```
 
-**Step 3 — Extract structured data:** Send each Markdown file to the OpenAI Responses API (default: `gpt-5.4-mini`, reasoning effort `medium`) and save one JSON file per job listing under `json/<model>/<effort>/<posting-slug>/`. Postings that already have output are skipped; failed extractions are retried up to 3 times and reported at the end.
+**Step 3 — Extract structured data:** Send each Markdown file to the OpenAI Responses API (default: `gpt-5.4-mini`, reasoning effort `medium`) and save one JSON file per job listing under `json/<posting-slug>/`. Postings that already have output are skipped; failed extractions are retried up to 3 times and reported at the end.
 
 ```bash
 poetry run python scripts/extract_job_listing.py
@@ -83,7 +83,7 @@ Add `--include-summary` to also pull the summary section (omitted by default to 
 poetry run python scripts/merge_job_data.py
 ```
 
-**Step 7 — Export to CSV:** Recursively read every JSON file under `json/gpt-5.4-mini/medium/` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
+**Step 7 — Export to CSV:** Recursively read every JSON file under `json/*/*.json` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
 
 ```bash
 poetry run python scripts/json_to_csv.py
