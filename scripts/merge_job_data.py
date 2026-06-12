@@ -127,7 +127,7 @@ def build_merged_posting(
     if not posting_id:
         raise ValueError("Posting is missing required 'id' field.")
 
-    soc_code = posting.get("socCode", "").strip()
+    soc_code = str(posting.get("socCode") or "").strip()
 
     merged: dict[str, Any] = {
         "id": posting_id,
@@ -156,6 +156,32 @@ def write_json(output_path: Path, data: dict[str, Any]) -> None:
         file.write("\n")
 
 
+def print_missing_section(
+    *,
+    title: str,
+    rows: list[dict[str, str]],
+    include_oes_soc_code: bool = False,
+) -> None:
+    """Print a readable list of missing merge inputs."""
+    if not rows:
+        return
+
+    print()
+    print(title)
+    print("-" * len(title))
+
+    for row in rows:
+        print(f"- {row['path']}")
+        print(f"  id:        {row['id']}")
+        print(f"  jobTitle:  {row['jobTitle']}")
+        print(f"  sourceUrl: {row['sourceUrl']}")
+        print(f"  socCode:   {row['socCode'] or '<empty>'}")
+
+        if include_oes_soc_code:
+            print(f"  OES lookup code: {row['oesSocCode'] or '<empty>'}")
+
+        print()
+
 def main() -> None:
     """Merge posting JSON files with OES wage data and selected O*NET sections."""
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
@@ -164,9 +190,10 @@ def main() -> None:
     posting_files = find_posting_files(POSTINGS_ROOT)
 
     created_count = 0
-    missing_soc_code_count = 0
-    missing_oes_count = 0
-    missing_onet_count = 0
+
+    missing_soc_code: list[dict[str, str]] = []
+    missing_oes: list[dict[str, str]] = []
+    missing_onet: list[dict[str, str]] = []
 
     for posting_path in posting_files:
         with posting_path.open("r", encoding="utf-8") as file:
@@ -174,13 +201,22 @@ def main() -> None:
 
         merged = build_merged_posting(posting, oes_rows_by_soc_code)
 
+        posting_info = {
+            "path": str(posting_path),
+            "id": str(posting.get("id") or ""),
+            "jobTitle": str(posting.get("jobTitle") or ""),
+            "sourceUrl": str(posting.get("sourceUrl") or ""),
+            "socCode": str(merged.get("socCode") or ""),
+            "oesSocCode": normalize_soc_code_for_oes(str(merged.get("socCode") or "")),
+        }
+
         if not merged["socCode"]:
-            missing_soc_code_count += 1
+            missing_soc_code.append(posting_info)
         elif merged["oes"] is None:
-            missing_oes_count += 1
+            missing_oes.append(posting_info)
 
         if merged["socCode"] and merged["onet"] is None:
-            missing_onet_count += 1
+            missing_onet.append(posting_info)
 
         output_path = OUTPUT_ROOT / f"{merged['id']}.json"
         write_json(output_path, merged)
@@ -188,9 +224,25 @@ def main() -> None:
         created_count += 1
 
     print(f"Created {created_count} merged posting files in {OUTPUT_ROOT}/")
-    print(f"Postings without SOC code: {missing_soc_code_count}")
-    print(f"Postings with SOC code but no OES match: {missing_oes_count}")
-    print(f"Postings with SOC code but no O*NET file: {missing_onet_count}")
+    print(f"Postings without SOC code: {len(missing_soc_code)}")
+    print(f"Postings with SOC code but no OES match: {len(missing_oes)}")
+    print(f"Postings with SOC code but no O*NET file: {len(missing_onet)}")
+
+    print_missing_section(
+        title="Postings without SOC code",
+        rows=missing_soc_code,
+    )
+
+    print_missing_section(
+        title="Postings with SOC code but no OES match",
+        rows=missing_oes,
+        include_oes_soc_code=True,
+    )
+
+    print_missing_section(
+        title="Postings with SOC code but no O*NET file",
+        rows=missing_onet,
+    )
 
 
 if __name__ == "__main__":

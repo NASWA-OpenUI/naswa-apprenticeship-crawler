@@ -17,7 +17,7 @@ SOC_CODES_CSV_PATH = Path("oesdata/soccodes.csv")
 
 # New output file because this is now one row per extracted posting JSON file,
 # not one row per unique job title.
-OUTPUT_CSV_PATH = Path("oesdata/posting-soc-codes.csv")
+OUTPUT_CSV_PATH = Path("oesdata/postings-soc-codes-ai.csv")
 
 MODEL = "gpt-5.4-mini"
 REASONING_EFFORT = "low"
