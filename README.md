@@ -35,6 +35,8 @@ If you have run the crawler in the past and would like to rerun it and automatic
 poetry run scrapy crawl announcements -a archive_missing=true
 ```
 
+TODO: because "extract_job_listing" is expensive and also not idempotent, I tend to leave the folders that already exist in "json" there. However, when HTML is archived, we should removing them otherwise they still end up in "out/*". Currently this is done manually but we should probably have a new script for this. The new script should have 2 modes: (1) identify folders in "json" that match the ids of any files in "html-archived" and list them. (2) delete those folders from "json".
+
 **Step 2 — Convert to Markdown:** Parse the saved HTML files and write them to `markdown/` with YAML frontmatter (`source_file`, `source_url`, `source_title`, `date_posted`, `location`) and a Markdown body.
 
 ```bash
