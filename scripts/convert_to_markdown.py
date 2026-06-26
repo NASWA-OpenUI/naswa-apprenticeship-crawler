@@ -23,6 +23,21 @@ MANIFEST_PATH = PROJECT_ROOT / "manifests" / "announcements.json"
 
 BASE_URL = "https://dol.ny.gov/news"
 
+def clear_markdown_dir() -> int:
+    """
+    Delete existing Markdown files so markdown/ reflects the current html/ folder.
+
+    Only deletes top-level *.md files in markdown/.
+    """
+    deleted_count = 0
+
+    for md_path in MD_DIR.glob("*.md"):
+        if md_path.is_file():
+            md_path.unlink()
+            deleted_count += 1
+
+    return deleted_count
+
 
 def load_manifest() -> dict:
     if not MANIFEST_PATH.exists():
@@ -159,6 +174,9 @@ def convert_file(html_path: Path, md_path: Path, manifest_record: dict) -> None:
 
 def main() -> None:
     MD_DIR.mkdir(exist_ok=True)
+
+    deleted_count = clear_markdown_dir()
+    print(f"Deleted {deleted_count} existing Markdown file(s) from {MD_DIR}")
 
     manifest = load_manifest()
     current_files = get_current_html_files(manifest)

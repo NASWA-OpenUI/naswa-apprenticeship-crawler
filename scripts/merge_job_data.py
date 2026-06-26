@@ -19,6 +19,22 @@ ONET_DETAIL_KEYS = [
 ]
 
 
+def clear_output_dir() -> int:
+    """
+    Delete existing merged JSON files so out/ reflects the current json/ inputs.
+
+    Only deletes top-level *.json files in out/.
+    """
+    deleted_count = 0
+
+    for output_path in OUTPUT_ROOT.glob("*.json"):
+        if output_path.is_file():
+            output_path.unlink()
+            deleted_count += 1
+
+    return deleted_count
+
+
 def normalize_soc_code_for_oes(soc_code: str) -> str:
     """Convert an O*NET-SOC code like '51-7011.00' to an OES SOC code like '51-7011'."""
     return soc_code.strip().split(".")[0]
@@ -185,6 +201,9 @@ def print_missing_section(
 def main() -> None:
     """Merge posting JSON files with OES wage data and selected O*NET sections."""
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+
+    deleted_count = clear_output_dir()
+    print(f"Deleted {deleted_count} existing merged posting file(s) from {OUTPUT_ROOT}/")
 
     oes_rows_by_soc_code = load_oes_rows(OES_CSV_PATH)
     posting_files = find_posting_files(POSTINGS_ROOT)
