@@ -88,13 +88,6 @@ def save_manifest(manifest: dict) -> None:
     tmp_path.replace(MANIFEST_PATH)
 
 
-def relative_to_root(path: Path) -> str:
-    try:
-        return path.relative_to(ROOT_DIR).as_posix()
-    except ValueError:
-        return str(path)
-
-
 class AnnouncementsSpider(scrapy.Spider):
     name = "announcements"
     start_urls = [LISTINGS_URL]
@@ -151,7 +144,6 @@ class AnnouncementsSpider(scrapy.Spider):
         filename: str,
         url: str,
         listing_page_url: str,
-        status: int | None = None,
     ) -> None:
         """Record one posting as current in the manifest."""
         postings = self.manifest.setdefault("postings", {})
@@ -165,11 +157,6 @@ class AnnouncementsSpider(scrapy.Spider):
             "first_seen_at": existing.get("first_seen_at") or self.run_started_at,
             "last_seen_at": self.run_started_at,
         }
-
-        if status is not None:
-            record["status"] = status
-        elif existing.get("status") is not None:
-            record["status"] = existing["status"]
 
         postings[filename] = record
         self.seen_files.add(filename)
@@ -195,7 +182,6 @@ class AnnouncementsSpider(scrapy.Spider):
                     filename=filename,
                     url=existing_record.get("url") or request_url,
                     listing_page_url=response.url,
-                    status=existing_record.get("status"),
                 )
 
                 self.logger.info("Already saved, skipping: %s", filename)
@@ -239,10 +225,9 @@ class AnnouncementsSpider(scrapy.Spider):
         dest.write_bytes(response.body)
 
         self.record_current_posting(
-            filename=filename,
-            url=url,
-            listing_page_url=listing_page_url,
-            status=response.status,
+                filename=filename,
+                url=url,
+                listing_page_url=listing_page_url,
         )
 
         if filename != request_filename or url.rstrip("/") != request_url.rstrip("/"):
@@ -265,9 +250,6 @@ class AnnouncementsSpider(scrapy.Spider):
             if not record.get("archived"):
                 record["archived"] = True
                 record["archived_at"] = finished_at
-
-            record["last_not_seen_at"] = finished_at
-            record["archive_reason"] = "not_seen_on_live_listing"
 
     def spider_closed(self, spider, reason):
         if reason != "finished":
@@ -315,11 +297,6 @@ class AnnouncementsSpider(scrapy.Spider):
 
                 dest = unique_archive_path(ARCHIVE_DIR / filename)
                 shutil.move(str(src), str(dest))
-
-                record = self.manifest.setdefault("postings", {}).get(filename)
-                if record is not None:
-                    record["archive_path"] = relative_to_root(dest)
-                    record["file_archived_at"] = finished_at
 
                 self.logger.info("Archived %s -> %s", src, dest)
 
