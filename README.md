@@ -35,15 +35,27 @@ If you have run the crawler in the past and would like to rerun it and automatic
 poetry run scrapy crawl announcements -a archive_missing=true
 ```
 
-TODO: because "extract_job_listing" is expensive and also not idempotent, I tend to leave the folders that already exist in "json" there. However, when HTML is archived, we should removing them otherwise they still end up in "out/*". Currently this is done manually but we should probably have a new script for this. The new script should have 2 modes: (1) identify folders in "json" that match the ids of any files in "html-archived" and list them. (2) delete those folders from "json".
+**Step 2 — Prune archived extracted JSON:** After running the crawler with `archive_missing=true`, remove extracted JSON folders for postings that are now marked archived in `manifests/announcements.json`.
 
-**Step 2 — Convert to Markdown:** Parse the saved HTML files and write them to `markdown/` with YAML frontmatter (`source_file`, `source_url`, `source_title`, `date_posted`, `location`) and a Markdown body.
+First list what would be removed:
+
+```bash
+poetry run python scripts/prune_archived_json.py --mode list
+```
+
+Then delete those archived extracted folders:
+
+```bash
+poetry run python scripts/prune_archived_json.py --mode delete
+```
+
+**Step 3 — Convert to Markdown:** Parse the saved HTML files and write them to `markdown/` with YAML frontmatter (`source_file`, `source_url`, `source_title`, `date_posted`, `location`) and a Markdown body.
 
 ```bash
 poetry run python scripts/convert_to_markdown.py
 ```
 
-**Step 3 — Extract structured data:** Send each Markdown file to the OpenAI Responses API (default: `gpt-5.4-mini`, reasoning effort `medium`) and save one JSON file per job listing under `json/<posting-slug>/`. Postings that already have output are skipped; failed extractions are retried up to 3 times and reported at the end.
+**Step 4 — Extract structured data:** Send each Markdown file to the OpenAI Responses API (default: `gpt-5.4-mini`, reasoning effort `medium`) and save one JSON file per job listing under `json/<posting-slug>/`. Postings that already have output are skipped; failed extractions are retried up to 3 times and reported at the end.
 
 ```bash
 poetry run python scripts/extract_job_listing.py
@@ -51,7 +63,7 @@ poetry run python scripts/extract_job_listing.py
 
 To process a single file instead of the whole `markdown/` directory, set `MARKDOWN_PATH` near the top of `extract_job_listing.py`.
 
-**Step 4 — Apply SOC codes:** Write O\*NET-SOC codes into the extracted posting JSON files. The source of truth is `oesdata/postings-soc-codes.csv`, a manually maintained CSV that maps each posting URL to its SOC code (`URL`, `ONETSOC_CODE`, `ONETSOC_TITLE` columns).
+**Step 5 — Apply SOC codes:** Write O\*NET-SOC codes into the extracted posting JSON files. The source of truth is `oesdata/postings-soc-codes.csv`, a manually maintained CSV that maps each posting URL to its SOC code (`URL`, `ONETSOC_CODE`, `ONETSOC_TITLE` columns).
 
 Start by listing which postings still lack a SOC code:
 
@@ -71,7 +83,7 @@ When the audit looks clean, apply the SOC codes to the JSON files:
 poetry run python scripts/apply_posting_soc_codes.py --mode apply
 ```
 
-**Step 5 — Fetch O\*NET data:** Download the full O\*NET occupation profile for each SOC code that appears in your postings and save it to `onet/<SOC_CODE>.json`. Pass one or more O\*NET-SOC codes as arguments. Requires `ONET_API_KEY` in your `.env`.
+**Step 6 — Fetch O\*NET data:** Download the full O\*NET occupation profile for each SOC code that appears in your postings and save it to `onet/<SOC_CODE>.json`. Pass one or more O\*NET-SOC codes as arguments. Requires `ONET_API_KEY` in your `.env`.
 
 ```bash
 poetry run python scripts/fetch_onet_occupation.py 47-2111.00 51-7011.00
@@ -79,13 +91,13 @@ poetry run python scripts/fetch_onet_occupation.py 47-2111.00 51-7011.00
 
 Add `--include-summary` to also pull the summary section (omitted by default to keep responses smaller).
 
-**Step 6 — Merge data:** Join each posting JSON file with BLS OES wage data (`oesdata/oesdata.csv`) and the O\*NET occupation profile fetched in Step 5. One merged JSON file per posting is written to `out/`. The script prints a summary of postings that are missing a SOC code, an OES match, or an O\*NET file so you can spot gaps before exporting.
+**Step 7 — Merge data:** Join each posting JSON file with BLS OES wage data (`oesdata/oesdata.csv`) and the O\*NET occupation profile fetched in Step 5. One merged JSON file per posting is written to `out/`. The script prints a summary of postings that are missing a SOC code, an OES match, or an O\*NET file so you can spot gaps before exporting.
 
 ```bash
 poetry run python scripts/merge_job_data.py
 ```
 
-**Step 7 — Export to CSV:** Recursively read every JSON file under `json/*/*.json` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
+**Step 8 — Export to CSV:** Recursively read every JSON file under `json/*/*.json` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
 
 ```bash
 poetry run python scripts/json_to_csv.py
