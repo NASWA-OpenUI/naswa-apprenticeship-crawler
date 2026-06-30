@@ -64,8 +64,12 @@ def parse_float(value: str) -> float | None:
         return None
 
 
+STATEWIDE_OES_AREA_TYPE = "01"
+STATEWIDE_OES_AREA = "000036"
+
+
 def load_oes_rows(csv_path: Path) -> dict[str, dict[str, Any]]:
-    """Load OES wage rows keyed by normalized SOC code."""
+    """Load statewide OES wage rows keyed by normalized SOC code."""
     if not csv_path.exists():
         raise FileNotFoundError(f"OES CSV not found: {csv_path}")
 
@@ -78,13 +82,19 @@ def load_oes_rows(csv_path: Path) -> dict[str, dict[str, Any]]:
             reader.fieldnames = [field.strip() for field in reader.fieldnames]
 
         for row in reader:
+            area_type = row.get("AREATYPE", "").strip()
+            area = row.get("AREA", "").strip()
+
+            if area_type != STATEWIDE_OES_AREA_TYPE or area != STATEWIDE_OES_AREA:
+                continue
+
             soc_code = row.get("SOCCODE", "").strip()
             if not soc_code:
                 continue
 
             rows_by_soc_code[soc_code] = {
-                "areaType": row.get("AREATYPE", "").strip(),
-                "area": row.get("AREA", "").strip(),
+                "areaType": area_type,
+                "area": area,
                 "areaName": row.get("AREANAME", "").strip(),
                 "socCode": soc_code,
                 "socTitle": row.get("SOCTITLE", "").strip(),
@@ -244,7 +254,7 @@ def main() -> None:
 
     print(f"Created {created_count} merged posting files in {OUTPUT_ROOT}/")
     print(f"Postings without SOC code: {len(missing_soc_code)}")
-    print(f"Postings with SOC code but no OES match: {len(missing_oes)}")
+    print(f"Postings with SOC code but no statewide OES match: {len(missing_oes)}")
     print(f"Postings with SOC code but no O*NET file: {len(missing_onet)}")
 
     print_missing_section(
@@ -253,7 +263,7 @@ def main() -> None:
     )
 
     print_missing_section(
-        title="Postings with SOC code but no OES match",
+        title="Postings with SOC code but no statewide OES match",
         rows=missing_oes,
         include_oes_soc_code=True,
     )
