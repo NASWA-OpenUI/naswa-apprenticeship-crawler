@@ -7,6 +7,7 @@ from typing import Any
 
 POSTINGS_ROOT = Path("json")
 OES_CSV_PATH = Path("oesdata/oesdata.csv")
+JOB_DESCRIPTIONS_CSV_PATH = Path("job-descriptions/job-descriptions.csv")
 ONET_ROOT = Path("onet")
 OUTPUT_ROOT = Path("out")
 
@@ -108,6 +109,72 @@ def load_oes_rows(csv_path: Path) -> dict[str, dict[str, Any]]:
 
     return rows_by_soc_code
 
+REQUIRED_JOB_DESCRIPTION_FIELDS = {
+    "id",
+    "displayJobTitle",
+    "description",
+}
+
+
+def load_job_description_rows(csv_path: Path) -> dict[str, dict[str, str]]:
+    """Load generated job descriptions keyed by posting id."""
+    if not csv_path.exists():
+        raise FileNotFoundError(f"Job descriptions CSV not found: {csv_path}")
+
+    rows_by_id: dict[str, dict[str, str]] = {}
+
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as file:
+        reader = csv.DictReader(file)
+
+        if reader.fieldnames:
+            reader.fieldnames = [field.strip() for field in reader.fieldnames]
+
+        fieldnames = set(reader.fieldnames or [])
+        missing_fields = REQUIRED_JOB_DESCRIPTION_FIELDS - fieldnames
+
+        if missing_fields:
+            missing_list = ", ".join(sorted(missing_fields))
+            raise ValueError(
+                f"Job descriptions CSV is missing required field(s): {missing_list}"
+            )
+
+        for row in reader:
+            posting_id = (row.get("id") or "").strip()
+
+            if not posting_id:
+                continue
+
+            if posting_id in rows_by_id:
+                raise ValueError(
+                    f"Duplicate job description row for posting id: {posting_id}"
+                )
+
+            rows_by_id[posting_id] = {
+                "displayJobTitle": (row.get("displayJobTitle") or "").strip(),
+                "description": (row.get("description") or "").strip(),
+            }
+
+    return rows_by_id
+
+
+def build_job_description(
+    row: dict[str, str] | None,
+) -> dict[str, str] | None:
+    """Build the root-level jobDescription object for merged output."""
+    if row is None:
+        return None
+
+    display_job_title = row.get("displayJobTitle", "").strip()
+    description = row.get("description", "").strip()
+
+    if not display_job_title or not description:
+        return None
+
+    return {
+        "displayJobTitle": display_job_title,
+        "description": description,
+    }
+
 
 def load_onet_data(onet_root: Path, soc_code: str) -> dict[str, Any] | None:
     """Load selected O*NET sections for a SOC code, preserving each selected section as-is."""
@@ -147,8 +214,9 @@ def find_posting_files(postings_root: Path) -> list[Path]:
 def build_merged_posting(
     posting: dict[str, Any],
     oes_rows_by_soc_code: dict[str, dict[str, Any]],
+    job_descriptions_by_id: dict[str, dict[str, str]],
 ) -> dict[str, Any]:
-    """Build one merged posting record from the original posting plus OES and O*NET data."""
+    """Build one merged posting record from the original posting plus OES, O*NET, and generated job description data."""
     posting_id = posting.get("id", "").strip()
     if not posting_id:
         raise ValueError("Posting is missing required 'id' field.")
@@ -159,6 +227,9 @@ def build_merged_posting(
         "id": posting_id,
         "socCode": soc_code,
         "posting": posting,
+        "jobDescription": build_job_description(
+            job_descriptions_by_id.get(posting_id)
+        ),
         "oes": None,
         "onet": None,
     }
@@ -216,6 +287,7 @@ def main() -> None:
     print(f"Deleted {deleted_count} existing merged posting file(s) from {OUTPUT_ROOT}/")
 
     oes_rows_by_soc_code = load_oes_rows(OES_CSV_PATH)
+    job_descriptions_by_id = load_job_description_rows(JOB_DESCRIPTIONS_CSV_PATH)
     posting_files = find_posting_files(POSTINGS_ROOT)
 
     created_count = 0
@@ -223,12 +295,17 @@ def main() -> None:
     missing_soc_code: list[dict[str, str]] = []
     missing_oes: list[dict[str, str]] = []
     missing_onet: list[dict[str, str]] = []
+    missing_job_description: list[dict[str, str]] = []
 
     for posting_path in posting_files:
         with posting_path.open("r", encoding="utf-8") as file:
             posting = json.load(file)
 
-        merged = build_merged_posting(posting, oes_rows_by_soc_code)
+        merged = build_merged_posting(
+            posting,
+            oes_rows_by_soc_code,
+            job_descriptions_by_id,
+        )
 
         posting_info = {
             "path": str(posting_path),
@@ -243,6 +320,8 @@ def main() -> None:
             missing_soc_code.append(posting_info)
         elif merged["oes"] is None:
             missing_oes.append(posting_info)
+        if merged["jobDescription"] is None:
+            missing_job_description.append(posting_info)
 
         if merged["socCode"] and merged["onet"] is None:
             missing_onet.append(posting_info)
@@ -256,6 +335,7 @@ def main() -> None:
     print(f"Postings without SOC code: {len(missing_soc_code)}")
     print(f"Postings with SOC code but no statewide OES match: {len(missing_oes)}")
     print(f"Postings with SOC code but no O*NET file: {len(missing_onet)}")
+    print(f"Postings without generated job description: {len(missing_job_description)}")
 
     print_missing_section(
         title="Postings without SOC code",
@@ -271,6 +351,11 @@ def main() -> None:
     print_missing_section(
         title="Postings with SOC code but no O*NET file",
         rows=missing_onet,
+    )
+
+    print_missing_section(
+        title="Postings without generated job description",
+        rows=missing_job_description,
     )
 
 
