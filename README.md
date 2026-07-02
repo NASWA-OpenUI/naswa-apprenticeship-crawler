@@ -1,10 +1,10 @@
 # NASWA Apprenticeship Crawler
 
-A small Poetry project that crawls NY DOL apprenticeship announcements, converts them to Markdown, extracts structured data via OpenAI, and exports the results to CSV.
+A small Poetry project that crawls NY DOL apprenticeship announcements, converts them to Markdown, extracts structured data via OpenAI, enriches postings with SOC/O\*NET/OES data, generates plain-language job descriptions, and exports the results.
 
 ## Getting started
 
-**Prerequisites:** Python 3.14+ and [Poetry](https://python-poetry.org/docs/#installation). An OpenAI API key is required for Step 3 and an O\*NET API key is required for Step 5. Register for O\*NET Web Services at [services.onetcenter.org/developer](https://services.onetcenter.org/developer/).
+**Prerequisites:** Python 3.14+ and [Poetry](https://python-poetry.org/docs/#installation). An OpenAI API key is required for Steps 4 and 7. An O\*NET API key is required for Step 6. Register for O\*NET Web Services at [services.onetcenter.org/developer](https://services.onetcenter.org/developer/).
 
 ```bash
 # Clone the repo
@@ -91,29 +91,64 @@ poetry run python scripts/fetch_onet_occupation.py 47-2111.00 51-7011.00
 
 Add `--include-summary` to also pull the summary section (omitted by default to keep responses smaller).
 
-**Step 7 — Merge data:** Join each posting JSON file with BLS OES wage data (`oesdata/oesdata.csv`) and the O\*NET occupation profile fetched in Step 5. One merged JSON file per posting is written to `out/`. The script prints a summary of postings that are missing a SOC code, an OES match, or an O\*NET file so you can spot gaps before exporting.
+**Step 7 — Generate job descriptions:** Read every extracted posting JSON file under `json/*/*.json`, normalize the job title, and use the OpenAI Responses API to generate a short, plain-language job description. The output is written to `job_descriptions/job-descriptions.csv`.
+
+```bash
+poetry run python scripts/generate_job_descriptions.py
+```
+
+The generated CSV includes:
+
+```text
+id
+sourceUrl
+jobTitle
+displayJobTitle
+promptJobTitle
+socCode
+description
+```
+
+- `displayJobTitle` is the user-facing title we can use on the job posting page.
+- `description` is reused when there is an exact match on normalized prompt title and SOC code. If a posting has no SOC code, the script generates a fresh description.
+
+The script will exit early if `job_descriptions/job-descriptions.csv` already exists. To regenerate the file, delete it manually first.
+
+**Step 8 — Merge data:** Join each posting JSON file with BLS OES wage data (`oesdata/oesdata.csv`), the O\*NET occupation profile fetched in Step 6, and the generated job descriptions from Step 7. One merged JSON file per posting is written to `out/`.
 
 ```bash
 poetry run python scripts/merge_job_data.py
 ```
 
-**Step 8 — Export to CSV:** Recursively read every JSON file under `json/*/*.json` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
+Each merged output file includes:
+
+```text
+posting           # original extracted posting data
+jobDescription    # generated display title and plain-language description
+oes               # statewide OES wage data, when available
+onet              # selected O\*NET occupation profile sections, when available
+```
+
+The script prints a summary of postings that are missing a SOC code, an OES match, an O\*NET file, or a generated job description so you can spot gaps before exporting.
+
+**Step 9 — Export to CSV:** Recursively read every JSON file under `json/*/*.json` and write them as rows to `csv/apprenticeship-announcements.csv`. Array and object fields are serialized as compact JSON strings.
 
 ```bash
 poetry run python scripts/json_to_csv.py
 ```
 
-To export from a different model/effort folder, update `JSON_ROOT` near the top of `json_to_csv.py`.
+To export from a different JSON root, update `JSON_ROOT` near the top of `json_to_csv.py`.
 
 ## Output layout
 
-```
-html/          # raw HTML pages from the crawler (one file per announcement)
-markdown/      # converted Markdown files with YAML frontmatter
-json/          # extracted job listings, organized by model/effort/posting-slug/
-onet/          # O*NET occupation profiles, one JSON file per SOC code
-out/           # merged posting records (posting + OES wages + O*NET data)
-csv/           # final CSV export
-oesdata/       # BLS OES wage CSV and the manual postings-soc-codes.csv mapping
-schemas/       # JSON Schema used to validate extracted job listings
+```text
+html/              # raw HTML pages from the crawler (one file per announcement)
+markdown/          # converted Markdown files with YAML frontmatter
+json/              # extracted job listings, one folder per posting
+job-descriptions/  # generated plain-language job descriptions CSV
+onet/              # O\*NET occupation profiles, one JSON file per SOC code
+out/               # merged posting records (posting + job description + OES wages + O\*NET data)
+csv/               # final CSV export
+oesdata/           # BLS OES wage CSV and the manual postings-soc-codes.csv mapping
+schemas/           # JSON Schema used to validate extracted job listings
 ```
