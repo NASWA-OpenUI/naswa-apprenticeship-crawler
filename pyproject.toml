@@ -6,9 +6,9 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "scrapy",
-    "beautifulsoup4 (>=4.14.3,<5.0.0)",
-    "markdownify (>=1.2.2,<2.0.0)",
-    "openai (>=2.36.0,<3.0.0)",
+    "beautifulsoup4 (>=4.15.0,<5.0.0)",
+    "markdownify (>=1.2.3,<2.0.0)",
+    "openai (>=2.44.0,<3.0.0)",
     "python-dotenv (>=1.2.2,<2.0.0)",
     "jsonschema (>=4.26.0,<5.0.0)",
     "requests (>=2.34.2,<3.0.0)"
