@@ -107,6 +107,8 @@ class AnnouncementsSpider(scrapy.Spider):
 
         self.existing_files: set[str] = set()
         self.seen_files: set[str] = set()
+        self.new_files: set[str] = set()
+        self.archived_files: set[str] = set()
 
         self.manifest: dict = {}
         self.run_started_at = ""
@@ -208,6 +210,7 @@ class AnnouncementsSpider(scrapy.Spider):
         if next_href:
             yield response.follow(next_href, callback=self.parse)
 
+    
     def save_page(self, response):
         request_url = response.meta.get("request_url", response.url)
         request_filename = response.meta.get(
@@ -218,17 +221,21 @@ class AnnouncementsSpider(scrapy.Spider):
 
         url = response.url
         filename = url_to_filename(url)
-
         dest = HTML_DIR / filename
+
+        is_new = filename not in self.existing_files
 
         HTML_DIR.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(response.body)
 
         self.record_current_posting(
-                filename=filename,
-                url=url,
-                listing_page_url=listing_page_url,
+            filename=filename,
+            url=url,
+            listing_page_url=listing_page_url,
         )
+
+        if is_new:
+            self.new_files.add(filename)
 
         if filename != request_filename or url.rstrip("/") != request_url.rstrip("/"):
             self.logger.info(
@@ -298,6 +305,8 @@ class AnnouncementsSpider(scrapy.Spider):
                 dest = unique_archive_path(ARCHIVE_DIR / filename)
                 shutil.move(str(src), str(dest))
 
+                self.archived_files.add(filename)
+
                 self.logger.info("Archived %s -> %s", src, dest)
 
         postings = self.manifest.setdefault("postings", {})
@@ -309,5 +318,27 @@ class AnnouncementsSpider(scrapy.Spider):
         )
 
         save_manifest(self.manifest)
+
+        self.logger.info("")
+        self.logger.info("=" * 60)
+        self.logger.info("CRAWL SUMMARY")
+        self.logger.info("=" * 60)
+        self.logger.info(
+            "Jobs crawled:  %d",
+            len(self.seen_files),
+        )
+        self.logger.info(
+            "New jobs:      %d",
+            len(self.new_files),
+        )
+        self.logger.info(
+            "Jobs archived: %d",
+            len(self.archived_files),
+        )
+        self.logger.info(
+            "Archive candidates: %d",
+            len(missing_files),
+        )
+        self.logger.info("=" * 60)
 
         self.logger.info("Manifest saved to %s", MANIFEST_PATH)
