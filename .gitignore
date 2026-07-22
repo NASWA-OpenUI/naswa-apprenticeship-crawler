@@ -12,7 +12,7 @@ env/
 .scrapy/
 
 # Local output
-data/
+reports/
 downloads/
 output/
 

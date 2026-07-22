@@ -52,6 +52,7 @@ Important rules:
 - Use the source_title value from the markdown front matter for sourceTitle.
 - Create id as a stable slug-style job listing ID. If the source posting contains multiple jobs, combine the source URL/file slug with a job-title slug.
 - Set socCode to null unless an O*NET-SOC code is explicitly present in the markdown.
+- Set regions to an empty array. Do not infer labor-market regions during extraction.
 - If the posting does not give separate application dates, use recruitmentStartDate as applicationStartDate and recruitmentEndDate as applicationEndDate.
 - applicationEndDate is the application deadline.
 - Use plain-language strings for requirement fields.
@@ -260,7 +261,6 @@ def dedupe_lists(data: dict[str, Any]) -> dict[str, Any]:
     """Remove duplicate values from known list fields while preserving their original order."""
     for key in [
         "applicationMethods",
-        "regions",
         "allRequirements",
     ]:
         values = data.get(key)
@@ -470,6 +470,9 @@ def normalize_job_listing(
     Force deterministic fields that should not be left to the model.
     """
     job_listing["sourceUrl"] = source_url
+
+    # make sure "regions" is empty
+    job_listing["regions"] = []
 
     if source_title:
         job_listing["sourceTitle"] = source_title
