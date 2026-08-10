@@ -362,14 +362,33 @@ def build_response_schema(job_listing_schema: dict[str, Any]) -> dict[str, Any]:
 
 def schema_for_openai(schema: dict[str, Any]) -> dict[str, Any]:
     """
-    The local schema file can include metadata such as $schema, $id, title, and description.
-    The OpenAI Structured Outputs call only needs the actual schema shape.
+    Build an OpenAI-compatible copy of the local JSON Schema.
+
+    The canonical schema can use JSON Schema features that are not supported
+    by OpenAI Structured Outputs. Remove those constraints only from the copy
+    sent to the API.
     """
-    return {
+
+    def clean(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {
+                key: clean(item)
+                for key, item in value.items()
+                if key != "uniqueItems"
+            }
+
+        if isinstance(value, list):
+            return [clean(item) for item in value]
+
+        return value
+
+    cleaned_schema = {
         key: value
         for key, value in schema.items()
         if key not in {"$schema", "$id", "title", "description"}
     }
+
+    return clean(cleaned_schema)
 
 
 def validate_response(
