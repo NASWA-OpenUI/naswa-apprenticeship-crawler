@@ -156,7 +156,7 @@ poetry run python scripts/fetch_onet_occupation.py 47-2111.00 51-7011.00
 
 Add `--include-summary` to also pull the summary section (omitted by default to keep responses smaller).
 
-**Step 8 — Generate job descriptions:** Read every extracted posting JSON file under `json/*/*.json`, normalize the job title, and use the OpenAI Responses API to generate a short, plain-language job description. The output is written to `job-descriptions/job-descriptions.csv`.
+**Step 8 — Generate job descriptions:** Read every extracted posting JSON file under `json/*/*.json`, normalize the job title, and use the OpenAI Responses API to generate a short, plain-language job description. The output is written to `job-descriptions/job-descriptions-postings.csv`.
 
 ```bash
 poetry run python scripts/generate_job_descriptions.py
@@ -177,7 +177,7 @@ description
 - `displayJobTitle` is the user-facing title we can use on the job posting page.
 - `description` is reused when there is an exact match on normalized prompt title and SOC code. If a posting has no SOC code, the script generates a fresh description.
 
-The script will exit early if `job_descriptions/job-descriptions.csv` already exists. To regenerate the file, delete it manually first.
+The script will exit early if `job_descriptions/job-descriptions-postings.csv` already exists. To regenerate the file, delete it manually first.
 
 **Step 9 — Merge data:** Join each posting JSON file with BLS OES wage data (`oesdata/oesdata.csv`), the O\*NET occupation profile fetched in Step 6, and the generated job descriptions from Step 7. One merged JSON file per posting is written to `out/`.
 

@@ -16,7 +16,7 @@ MODEL = "gpt-5.4"
 JSON_ROOT = Path("./json")
 
 OUTPUT_DIR = Path("./job-descriptions")
-OUTPUT_CSV_PATH = OUTPUT_DIR / "job-descriptions.csv"
+OUTPUT_CSV_PATH = OUTPUT_DIR / "job-descriptions-postings.csv"
 
 CSV_FIELDNAMES = [
     "id",

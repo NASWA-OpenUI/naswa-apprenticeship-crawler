@@ -7,7 +7,7 @@ from typing import Any
 
 POSTINGS_ROOT = Path("json")
 OES_CSV_PATH = Path("oesdata/oesdata.csv")
-JOB_DESCRIPTIONS_CSV_PATH = Path("job-descriptions/job-descriptions.csv")
+JOB_DESCRIPTIONS_CSV_PATH = Path("job-descriptions/job-descriptions-postings.csv")
 ONET_ROOT = Path("onet")
 OUTPUT_ROOT = Path("out")
 
