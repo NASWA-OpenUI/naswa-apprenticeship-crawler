@@ -1,0 +1,284 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Registered Apprenticeship Program Group",
+    "description": "A group of active or probationary registered apprenticeship programs that share the same O*NET-SOC code. Programs are grouped first by occupation and then by trade name for apprenticeship matching and program browsing.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "socCode",
+        "socTitle",
+        "programCount",
+        "regions",
+        "trades"
+    ],
+    "properties": {
+        "socCode": {
+            "type": "string",
+            "pattern": "^\\d{2}-\\d{4}\\.\\d{2}$",
+            "maxLength": 10,
+            "description": "O*NET-SOC code shared by every program in this group, such as '47-2111.00'. Taken from ONET_SOC_CODE in the source program data."
+        },
+        "socTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300,
+            "description": "O*NET-SOC occupation title shared by the programs in this group. Taken from ONET_TITLE in the source program data."
+        },
+        "programCount": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Total number of included registered apprenticeship programs in this SOC group."
+        },
+        "regions": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "description": "Unique official New York State labor-market regions represented by the included programs in this SOC group.",
+            "items": {
+                "$ref": "#/$defs/region"
+            }
+        },
+        "trades": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Included programs within this SOC group, grouped by their source trade name.",
+            "items": {
+                "$ref": "#/$defs/trade"
+            }
+        }
+    },
+    "$defs": {
+        "region": {
+            "type": "string",
+            "enum": [
+                "Capital Region",
+                "Central New York",
+                "Finger Lakes",
+                "Hudson Valley",
+                "Long Island",
+                "Mohawk Valley",
+                "New York City",
+                "North Country",
+                "Southern Tier",
+                "Western New York"
+            ]
+        },
+        "trade": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "tradeName",
+                "programCount",
+                "programs"
+            ],
+            "properties": {
+                "tradeName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300,
+                    "description": "Trade name exactly as represented by TRADE_NAME in the source program data."
+                },
+                "programCount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Number of included registered apprenticeship programs in this SOC group that use this trade name."
+                },
+                "programs": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "Individual registered apprenticeship programs that use this trade name.",
+                    "items": {
+                        "$ref": "#/$defs/program"
+                    }
+                }
+            }
+        },
+        "program": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "programAk",
+                "sponsorName",
+                "tradeName",
+                "addressLine1",
+                "addressLine2",
+                "addressCity",
+                "addressState",
+                "addressPostalCode",
+                "region",
+                "programStatus",
+                "programApprovalDate",
+                "programGroupType",
+                "programApproach",
+                "programLength",
+                "ratio",
+                "socCode",
+                "socTitle"
+            ],
+            "properties": {
+                "programAk": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Primary key uniquely identifying this registered apprenticeship program. Taken from PROGRAM_AK."
+                },
+                "sponsorName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "description": "Program sponsor name from SPONSOR_NAME."
+                },
+                "tradeName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300,
+                    "description": "Trade name from TRADE_NAME. Retained on the individual program even though programs are also grouped by trade name."
+                },
+                "addressLine1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 250,
+                    "description": "First line of the sponsor mailing address from ADDRESS_LINE1, or null when blank."
+                },
+                "addressLine2": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 250,
+                    "description": "Second line of the sponsor mailing address from ADDRESS_LINE2, or null when blank."
+                },
+                "addressCity": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 80,
+                    "description": "City from ADDRESS_CITY, or null when blank."
+                },
+                "addressState": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "pattern": "^[A-Z]{2}$",
+                    "maxLength": 2,
+                    "description": "Two-letter state abbreviation from ADDRESS_STATE, or null when blank."
+                },
+                "addressPostalCode": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 20,
+                    "description": "Postal code from ADDRESS_POSTAL_CODE. Stored as a string to preserve formatting and leading zeroes, or null when blank."
+                },
+                "region": {
+                    "$ref": "#/$defs/region",
+                    "description": "Canonical New York State labor-market region for this program. Normalized from SPONSOR_REDC_REGION so it uses the same region names as the rest of the application."
+                },
+                "programStatus": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Probation"
+                    ],
+                    "description": "Program status from PROGRAM_STATUS. Only Active and Probation programs are included. Inactive programs are excluded during preprocessing."
+                },
+                "programApprovalDate": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                    "description": "Date the program was approved, from PROGRAM_APPROVAL_DATE, in YYYY-MM-DD format. Null when unavailable."
+                },
+                "programGroupType": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "enum": [
+                        "Group - Joint",
+                        "Group - Non Joint",
+                        "Individual - Joint",
+                        "Individual - Non Joint",
+                        null
+                    ],
+                    "maxLength": 75,
+                    "description": "Program group classification from PROGRAM_GROUP_TYPE."
+                },
+                "programApproach": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "enum": [
+                        "Time",
+                        "Competency",
+                        "Hybrid",
+                        null
+                    ],
+                    "maxLength": 75,
+                    "description": "Training approach from PROGRAM_APPROACH. Source values are preserved as Time, Competency, or Hybrid."
+                },
+                "programLength": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ],
+                    "minimum": 1,
+                    "description": "Program length in months from PROGRAM_LENGTH. This field represents program length for time-based programs and is null when no applicable source value is provided."
+                },
+                "ratio": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "description": "Apprentice-to-journeyworker ratio from RATIO, preserved as source text. For example, '1:1, 1:4' means one journeyworker is required for the first apprentice and four additional journeyworkers for each subsequent apprentice."
+                },
+                "socCode": {
+                    "type": "string",
+                    "pattern": "^\\d{2}-\\d{4}\\.\\d{2}$",
+                    "maxLength": 10,
+                    "description": "O*NET-SOC code for this individual program from ONET_SOC_CODE. Retained even though it is also represented at the SOC-group level."
+                },
+                "socTitle": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300,
+                    "description": "O*NET-SOC title for this individual program from ONET_TITLE. Retained even though it is also represented at the SOC-group level."
+                }
+            },
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "programApproach": {
+                                "const": "Time"
+                            }
+                        },
+                        "required": [
+                            "programApproach"
+                        ]
+                    },
+                    "then": {
+                        "properties": {
+                            "programLength": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
