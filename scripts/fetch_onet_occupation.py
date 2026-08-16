@@ -104,6 +104,22 @@ def fetch_paginated(url: str, api_key: str) -> dict[str, Any]:
 
     return merged
 
+def normalize_linked_url(url: str) -> str:
+    """
+    Normalize known stale O*NET linked-section URLs.
+
+    Some occupation overview responses currently link In Demand Skills to
+    /in_demand, while the O*NET Web Services v2 endpoint is
+    /in_demand_skills.
+    """
+    parsed = urlparse(url)
+
+    if parsed.path.endswith("/in_demand"):
+        parsed = parsed._replace(
+            path=f"{parsed.path}_skills"
+        )
+
+    return parsed.geturl()
 
 def fetch_linked_sections(
     items: list[dict[str, str]],
@@ -113,7 +129,8 @@ def fetch_linked_sections(
     sections: dict[str, Any] = {}
 
     for item in items:
-        href = item["href"]
+        original_href = item["href"]
+        href = normalize_linked_url(original_href)
         title = item.get("title", href)
         key = get_section_key(item)
 

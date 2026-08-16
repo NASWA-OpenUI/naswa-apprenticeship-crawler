@@ -1,0 +1,24 @@
+sourceSocCode,sourceSocTitle,targetSocCode,targetSocTitle,reason
+15-1122.00,Information Security Analysts,15-1212.00,Information Security Analysts,Official O*NET taxonomy replacement
+15-1131.00,Computer Programmers,15-1251.00,Computer Programmers,Official O*NET taxonomy replacement
+15-1142.00,Network and Computer Systems Administrators,15-1244.00,Network and Computer Systems Administrators,Official O*NET taxonomy replacement
+15-1151.00,Computer User Support Specialists,15-1232.00,Computer User Support Specialists,Official O*NET taxonomy replacement
+15-1199.00,"Computer Occupations, All Other",15-1299.09,"Information Technology Project Managers",Manual replacement
+17-2199.04,Manufacturing Engineers,17-2112.03,Manufacturing Engineers,Official O*NET taxonomy replacement
+17-3023.01,Electronics Engineering Technicians,17-3023.00,Electrical and Electronic Engineering Technologists and Technicians,Official O*NET taxonomy replacement
+17-3024.40,Electro-Mechanical Technicians,17-3024.00,"Electro-Mechanical and Mechatronics Technologists and Technicians",Manual replacement
+17-3029.09,Manufacturing Production Technicians,17-3026.00,Industrial Engineering Technologists and Technicians,Official O*NET taxonomy replacement
+19-4021.10,Biological Technicians,19-4021.00,"Biological Technicians",Manual replacement
+33-2011.01,Municipal Fire Fighters,33-2011.00,Firefighters,Official O*NET taxonomy replacement
+33-3051.01,Police Patrol Officers,33-3051.00,Police and Sheriff's Patrol Officers,Official O*NET taxonomy replacement
+47-2031.01,Construction Carpenters,47-2031.00,Carpenters,Official O*NET taxonomy replacement
+47-2031.02,Rough Carpenters,47-2031.00,Carpenters,Official O*NET taxonomy replacement
+47-2152.01,Pipe Fitters and Steamfitters,47-2152.00,"Plumbers, Pipefitters, and Steamfitters",Official O*NET taxonomy replacement
+47-2152.02,Plumbers,47-2152.00,"Plumbers, Pipefitters, and Steamfitters",Official O*NET taxonomy replacement
+47-4099.99,"Grinding and Polishing Workers, Hand",51-9022.00,"Grinding and Polishing Workers, Hand",Manual replacement
+49-3023.01,Automotive Master Mechanics,49-3023.00,Automotive Service Technicians and Mechanics,Official O*NET taxonomy replacement
+49-9021.01,Heating and Air Conditioning Mechanics and Installers,49-9021.00,"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",Official O*NET taxonomy replacement
+49-9021.02,Refrigeration Mechanics and Installers,49-9021.00,"Heating, Air Conditioning, and Refrigeration Mechanics and Installers",Official O*NET taxonomy replacement
+49-9042.00,"Maintenance and Repair Workers, General",49-9071.00,"Maintenance and Repair Workers, General",Manual replacement
+51-4121.06,"Welders, Cutters, and Welder Fitters",51-4121.00,"Welders, Cutters, Solderers, and Brazers",Official O*NET taxonomy replacement
+51-5023.00,Printing Machine Operators,51-5112.00,"Printing Press Operators",Manual replacement

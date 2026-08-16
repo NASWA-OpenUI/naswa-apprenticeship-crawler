@@ -44,6 +44,18 @@ POSTING_CACHE_FIELDNAMES = [
     "description",
 ]
 
+SOC_MAPPINGS_CSV_PATH = Path(
+    "./programs/soc-code-mappings.csv"
+)
+
+SOC_MAPPING_FIELDNAMES = [
+    "sourceSocCode",
+    "sourceSocTitle",
+    "targetSocCode",
+    "targetSocTitle",
+    "reason",
+]
+
 
 def main() -> None:
     load_dotenv()
@@ -63,6 +75,9 @@ def main() -> None:
     posting_rows = load_posting_description_rows(
         POSTING_DESCRIPTIONS_CSV_PATH
     )
+    soc_code_mappings = load_soc_code_mappings(
+        SOC_MAPPINGS_CSV_PATH
+    )
 
     existing_rows_by_program_ak = {
         row["programAk"]: row
@@ -78,6 +93,12 @@ def main() -> None:
     program_cache = build_description_cache(
         existing_rows,
         prompt_title_field="promptTradeName",
+    )
+
+    add_mapped_program_cache_entries(
+        description_cache=program_cache,
+        existing_rows=existing_rows,
+        soc_code_mappings=soc_code_mappings,
     )
 
     description_cache = {
@@ -235,6 +256,7 @@ def main() -> None:
                     existing_row=existing_row,
                     prompt_trade_name=prompt_trade_name,
                     soc_code=program_soc_code,
+                    soc_code_mappings=soc_code_mappings,
                 ):
                     description = existing_row["description"]
                     action = "kept"
@@ -579,17 +601,90 @@ def load_posting_description_rows(
     return rows
 
 
+def load_soc_code_mappings(
+    path: Path,
+) -> dict[str, str]:
+    """
+    Load completed reviewed SOC mappings as:
+
+        old SOC code -> current SOC code
+
+    Incomplete manual-review rows are ignored.
+    """
+    if not path.exists():
+        return {}
+
+    with path.open(
+        newline="",
+        encoding="utf-8",
+    ) as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        fieldnames = set(reader.fieldnames or [])
+        missing_fields = (
+            set(SOC_MAPPING_FIELDNAMES)
+            - fieldnames
+        )
+
+        if missing_fields:
+            missing = ", ".join(
+                sorted(missing_fields)
+            )
+
+            raise ValueError(
+                f"{path} is missing required column(s): "
+                f"{missing}"
+            )
+
+        mappings: dict[str, str] = {}
+
+        for row_number, raw_row in enumerate(
+            reader,
+            start=2,
+        ):
+            source_code = (
+                raw_row.get("sourceSocCode") or ""
+            ).strip()
+            target_code = (
+                raw_row.get("targetSocCode") or ""
+            ).strip()
+
+            if not source_code:
+                raise ValueError(
+                    f"{path} row {row_number} "
+                    "has no sourceSocCode."
+                )
+
+            # Incomplete audit rows are deliberately ignored.
+            if not target_code:
+                continue
+
+            if source_code in mappings:
+                raise ValueError(
+                    f"{path} contains duplicate "
+                    f"sourceSocCode: {source_code}"
+                )
+
+            mappings[source_code] = target_code
+
+    return mappings
+
+
 def can_keep_existing_description(
     *,
     existing_row: dict[str, str] | None,
     prompt_trade_name: str,
     soc_code: str,
+    soc_code_mappings: dict[str, str],
 ) -> bool:
     """
     Return whether a current program can keep its existing description.
 
-    A description remains valid when the normalized trade title and SOC code
-    have not changed for the same PROGRAM_AK.
+    The normalized trade title must be unchanged.
+
+    The SOC code may either:
+    - be unchanged, or
+    - have changed through a reviewed source -> target SOC mapping.
     """
     if existing_row is None:
         return False
@@ -604,6 +699,9 @@ def can_keep_existing_description(
         prompt_trade_name
     )
 
+    if existing_title != current_title:
+        return False
+
     existing_soc_code = normalized_cache_soc_code(
         existing_row["socCode"]
     )
@@ -611,10 +709,65 @@ def can_keep_existing_description(
         soc_code
     )
 
-    return (
-        existing_title == current_title
-        and existing_soc_code == current_soc_code
+    if existing_soc_code == current_soc_code:
+        return True
+
+    mapped_soc_code = normalized_cache_soc_code(
+        soc_code_mappings.get(
+            existing_soc_code
+        )
     )
+
+    return (
+        bool(mapped_soc_code)
+        and mapped_soc_code == current_soc_code
+    )
+
+
+def add_mapped_program_cache_entries(
+    *,
+    description_cache: dict[tuple[str, str], str],
+    existing_rows: list[dict[str, str]],
+    soc_code_mappings: dict[str, str],
+) -> None:
+    """
+    Make descriptions cached under an old reviewed SOC code available under
+    its mapped current SOC code as well.
+
+    This avoids regenerating descriptions solely because the underlying
+    taxonomy code was corrected.
+    """
+    for row in existing_rows:
+        old_soc_code = normalized_cache_soc_code(
+            row["socCode"]
+        )
+
+        mapped_soc_code = soc_code_mappings.get(
+            old_soc_code
+        )
+
+        if not mapped_soc_code:
+            continue
+
+        title = normalized_cache_title(
+            row["promptTradeName"]
+        )
+        new_soc_code = normalized_cache_soc_code(
+            mapped_soc_code
+        )
+
+        if not title or not new_soc_code:
+            continue
+
+        mapped_key = (
+            title,
+            new_soc_code,
+        )
+
+        description_cache.setdefault(
+            mapped_key,
+            row["description"],
+        )
 
 
 def render_description_csv(
