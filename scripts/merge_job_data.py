@@ -5,19 +5,13 @@ import json
 from pathlib import Path
 from typing import Any
 
+from utils.onet_utils import load_onet_data
+
 POSTINGS_ROOT = Path("json")
 OES_CSV_PATH = Path("oesdata/oesdata.csv")
 JOB_DESCRIPTIONS_CSV_PATH = Path("job-descriptions/job-descriptions-postings.csv")
 ONET_ROOT = Path("onet")
 OUTPUT_ROOT = Path("out")
-
-ONET_DETAIL_KEYS = [
-    "tasks",
-    "detailed_work_activities",
-    "skills",
-    "abilities",
-    "work_styles",
-]
 
 
 def clear_output_dir() -> int:
@@ -174,33 +168,6 @@ def build_job_description(
         "displayJobTitle": display_job_title,
         "description": description,
     }
-
-
-def load_onet_data(onet_root: Path, soc_code: str) -> dict[str, Any] | None:
-    """Load selected O*NET sections for a SOC code, preserving each selected section as-is."""
-    onet_path = onet_root / f"{soc_code}.json"
-
-    if not onet_path.exists():
-        return None
-
-    with onet_path.open("r", encoding="utf-8") as file:
-        source_data = json.load(file)
-
-    details = source_data.get("details", {})
-
-    onet_data: dict[str, Any] = {
-        "socCode": source_data.get("socCode", ""),
-        "onetSocCode": source_data.get("onetSocCode", ""),
-        "title": source_data.get("title", ""),
-        "description": source_data.get("description", ""),
-        "fetchedAt": source_data.get("fetchedAt", ""),
-        "source": source_data.get("source"),
-    }
-
-    for key in ONET_DETAIL_KEYS:
-        onet_data[key] = details.get(key)
-
-    return onet_data
 
 
 def find_posting_files(postings_root: Path) -> list[Path]:
