@@ -1,10 +1,20 @@
 # NASWA Apprenticeship Crawler
 
-A small Poetry project that crawls NY DOL apprenticeship announcements, converts them to Markdown, extracts structured data via OpenAI, assigns official New York labor-market regions, enriches postings with SOC/O\*NET/OES data, generates plain-language job descriptions, and exports the results.
+A Poetry project for preparing two related New York apprenticeship datasets:
+
+- **Posted opportunities** — crawl NY DOL apprenticeship announcements, extract structured posting data, assign labor-market regions and SOC codes, enrich records with O*NET and OES data, and generate plain-language job descriptions.
+- **Registered programs** — process the NY registered apprenticeship program dataset, group programs by SOC code and trade, normalize outdated SOC codes, enrich groups with O*NET data, and generate plain-language trade descriptions.
+
+The two workflows share O*NET occupation data and description-generation utilities but produce separate final datasets for use by the apprenticeship matcher.
 
 ## Getting started
 
-**Prerequisites:** Python 3.14+ and [Poetry](https://python-poetry.org/docs/#installation). An OpenAI API key is required for Steps 4 and 7. An O\*NET API key is required for Step 6. Register for O\*NET Web Services at [services.onetcenter.org/developer](https://services.onetcenter.org/developer/).
+**Prerequisites:** 
+
+- Python 3.14+ and [Poetry](https://python-poetry.org/docs/#installation). 
+- An OpenAI API key is required for structured-data extraction and description generation. 
+- An O*NET API key is required for fetching occupation profiles.
+  - Register for O*NET Web Services at [services.onetcenter.org/developer](https://services.onetcenter.org/developer/).
 
 ```bash
 # Clone the repo
@@ -21,7 +31,7 @@ poetry shell
 cp .env.example .env
 ```
 
-## Usage
+## Posted opportunities workflow
 
 **Step 1 — Crawl:** Fetch all announcement pages from the [NY DOL announcements listing](https://dol.ny.gov/apprenticeship/apprenticeship-announcements) and save them as HTML files in `html/`. Already-saved files are skipped.
 
@@ -174,10 +184,14 @@ socCode
 description
 ```
 
-- `displayJobTitle` is the user-facing title we can use on the job posting page.
-- `description` is reused when there is an exact match on normalized prompt title and SOC code. If a posting has no SOC code, the script generates a fresh description.
+- `displayJobTitle` is the normalized user-facing title.
+- `promptJobTitle` is the normalized title used for description generation and reuse.
+- Existing descriptions are kept when the posting's normalized title and SOC code have not changed.
+- Descriptions can be reused across postings with the same normalized prompt title and SOC code.
+- New descriptions are generated only when no reusable description exists.
+- Rows for postings that no longer exist are removed.
 
-The script will exit early if `job_descriptions/job-descriptions-postings.csv` already exists. To regenerate the file, delete it manually first.
+The CSV is rewritten only when its contents have changed.
 
 **Step 9 — Merge data:** Join each posting JSON file with BLS OES wage data (`oesdata/oesdata.csv`), the O\*NET occupation profile fetched in Step 6, and the generated job descriptions from Step 7. One merged JSON file per posting is written to `out/`.
 
@@ -204,18 +218,134 @@ poetry run python scripts/json_to_csv.py
 
 To export from a different JSON root, update `JSON_ROOT` near the top of `json_to_csv.py`.
 
+## Registered program workflow
+
+Registered apprenticeship program data follows a separate pipeline from recruitment opportunities. The source file is `programs/ra-program-data.csv`, and the final output is one enriched JSON file per O*NET-SOC code under `programs/out/`.
+
+**Program Step 1 — Build program groups:** Read `programs/ra-program-data.csv`, normalize the source data, and group programs first by O*NET-SOC code and then by trade name. Active and probation programs are included; inactive and out-of-state programs are excluded.
+
+```bash
+poetry run python scripts/build_program_groups.py
+```
+
+The generated files are written to:
+
+```text
+programs/json/<SOC_CODE>.json
+```
+
+Each file contains one SOC group with its canonical regions, trade groups, and individual registered programs.
+
+**Program Step 2 — Audit SOC codes:** Check the SOC codes in `programs/json/` against the current O*NET taxonomy.
+
+```bash
+poetry run python scripts/audit_program_soc_codes.py
+```
+
+The audit does not modify the program JSON files. Obsolete, ambiguous, or unresolved source codes are added to:
+
+```text
+programs/soc-code-mappings.csv
+```
+
+Unambiguous official O*NET replacements are filled in automatically. Ambiguous or unresolved rows are left incomplete for manual review.
+
+**Program Step 3 — Apply reviewed SOC mappings:** Apply the completed mappings in `programs/soc-code-mappings.csv` to the grouped program JSON.
+
+```bash
+poetry run python scripts/apply_program_soc_codes.py
+```
+
+The script updates SOC codes and titles throughout each affected group, renames the output group where necessary, and merges groups that resolve to the same current SOC code. The resulting `programs/json/` directory contains the canonical SOC data used by later steps.
+
+**Program Step 4 — Audit O*NET coverage:** Compare the SOC groups in `programs/json/` with the cached occupation profiles under `onet/` and list any SOC codes that still need O*NET data.
+
+```bash
+poetry run python scripts/audit_program_onet.py
+```
+
+Fetch any missing occupation profiles with the same O*NET fetcher used by the opportunity workflow:
+
+```bash
+poetry run python scripts/fetch_onet_occupation.py 17-3024.00 21-1093.00
+```
+
+O*NET profiles are shared between the opportunity and program pipelines and are stored as:
+
+```text
+onet/<SOC_CODE>.json
+```
+
+**Program Step 5 — Generate trade descriptions:** Read the canonical program groups and generate short, plain-language descriptions for their apprenticeship trades.
+
+```bash
+poetry run python scripts/generate_program_descriptions.py
+```
+
+The output is written to:
+
+```text
+job-descriptions/job-descriptions-programs.csv
+```
+
+The CSV contains one row per registered program:
+
+```text
+programAk
+tradeName
+displayTradeName
+promptTradeName
+socCode
+description
+```
+
+Existing descriptions are kept when still valid, descriptions can be reused across programs with the same normalized trade and SOC code, and posting descriptions are also reused when an equivalent description already exists. Reviewed SOC-code changes are accounted for so descriptions are not regenerated solely because an obsolete SOC code was replaced.
+
+**Program Step 6 — Merge program data:** Combine each canonical SOC group with its generated trade descriptions and selected O*NET occupation data.
+
+```bash
+poetry run python scripts/merge_program_data.py
+```
+
+One final JSON file per SOC code is written to:
+
+```text
+programs/out/<SOC_CODE>.json
+```
+
+Each merged file includes:
+
+```text
+socCode        # canonical O*NET-SOC code
+socTitle       # program occupation title
+programCount   # number of registered programs in the SOC group
+regions        # combined canonical New York regions
+onet           # selected O*NET occupation profile sections
+trades         # trade groups with descriptions and individual programs
+```
+
+O*NET data is stored once at the SOC-group level, while generated descriptions are stored once per trade group.
+
+
 ## Output layout
 
 ```text
-html/              # raw HTML pages from the crawler
-markdown/          # converted Markdown files with YAML frontmatter
-json/              # extracted job listings, one folder per announcement
+html/              # raw apprenticeship announcement HTML from the crawler
+markdown/          # converted announcement Markdown with YAML frontmatter
+json/              # extracted opportunity postings, grouped by announcement
+out/               # final enriched opportunity records
+csv/               # CSV exports of opportunity posting data
+
+programs/          # registered apprenticeship program data
+  ra-program-data.csv       # source registered-program dataset
+  soc-code-mappings.csv     # reviewed obsolete/invalid SOC-code mappings
+  json/                      # normalized program groups, one file per SOC code
+  out/                       # final enriched program groups, one file per SOC code
+
 data/locations/    # region reference data and reviewed posting-region mappings
-reports/           # audit reports, including posting-region-normalization.csv
-job-descriptions/  # generated plain-language job descriptions CSV
-onet/              # O*NET occupation profiles, one JSON file per SOC code
-out/               # merged posting records
-csv/               # final CSV export
-oesdata/           # BLS OES data and the manual posting-to-SOC mapping
-schemas/           # JSON Schema used to validate extracted job listings
+reports/           # generated audit reports
+job-descriptions/  # generated posting and program description CSVs
+onet/              # shared O*NET occupation profiles, one JSON file per SOC code
+oesdata/           # BLS OES data and manual opportunity-to-SOC mappings
+schemas/           # JSON Schemas for opportunity and program data
 ```
