@@ -895,10 +895,13 @@ def build_merged_group(
                 program_ak
             )
 
+            merged_program = copy.deepcopy(
+                program
+            )
+            merged_program["opportunities"] = []
+
             merged_programs.append(
-                copy.deepcopy(
-                    program
-                )
+                merged_program
             )
 
         if len(

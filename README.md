@@ -220,7 +220,7 @@ To export from a different JSON root, update `JSON_ROOT` near the top of `json_t
 
 ## Registered program workflow
 
-Registered apprenticeship program data follows a separate pipeline from recruitment opportunities. The source file is `programs/ra-program-data.csv`, and the final output is one enriched JSON file per O*NET-SOC code under `programs/out/`.
+Registered apprenticeship program data follows a separate pipeline from recruitment opportunities. The source file is `programs/ra-program-data.csv`, with program-to-posting links in `programs/ra-programs-opportunities.csv`. The final output is one enriched JSON file per O*NET-SOC code under `programs/out/`.
 
 **Program Step 1 — Build program groups:** Read `programs/ra-program-data.csv`, normalize the source data, and group programs first by O*NET-SOC code and then by trade name. Active and probation programs are included; inactive and out-of-state programs are excluded.
 
@@ -324,8 +324,23 @@ onet           # selected O*NET occupation profile sections
 trades         # trade groups with descriptions and individual programs
 ```
 
-O*NET data is stored once at the SOC-group level, while generated descriptions are stored once per trade group.
+O*NET data is stored once at the SOC-group level, while generated descriptions are stored once per trade group. 
 
+Each individual program also receives an empty `opportunities` array for recruitment data added in the next step.
+
+**Program Step 7 — Add linked opportunities:** Read `programs/ra-programs-opportunities.csv` and connect registered programs to matching recruitment opportunities from `out/*.json`.
+
+```bash
+poetry run python scripts/add_program_opportunities.py
+```
+
+For each linked posting that exists in the current opportunity output, the script copies the complete `posting` object into the registered program's `opportunities` array. Links are matched by `PROGRAM_AK`, posting URL, and compatible SOC code.
+
+Linked postings that are not present in the current `out/` data are reported but do not stop the update. The completed enriched program files remain under:
+
+```text
+programs/out/<SOC_CODE>.json
+```
 
 ## Output layout
 
