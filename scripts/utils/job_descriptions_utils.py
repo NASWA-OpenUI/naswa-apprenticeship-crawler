@@ -185,20 +185,22 @@ def normalize_prompt_job_title(job_title: str) -> str:
 
 def normalize_display_job_title(job_title: str) -> str:
     """
-    Clean the job title for display as a page heading.
+    Clean the job title for display while preserving useful qualifiers.
 
     Examples:
     - Tile Setter (3 Year) -> Tile Setter
-    - Boilermaker (Construction) -> Boilermaker
-    - Ironworker (Outside) -> Ironworker
-    - Dry Wall Taper (Finisher) -> Drywall Taper
+    - Boilermaker (Construction) -> Boilermaker (Construction)
+    - Ironworker (Outside) -> Ironworker (Outside)
+    - Dry Wall Taper (Finisher) -> Drywall Taper (Finisher)
+    - Electrician (Housewire or Residential) ->
+      Electrician (Housewire or Residential)
     - Painter, Decorator & Paperhanger ->
       Painter, Decorator, and Paperhanger
     """
     normalized = job_title.strip()
 
     normalized = remove_apprenticeship_terms(normalized)
-    normalized = remove_parenthetical_qualifiers(normalized)
+    normalized = remove_empty_parentheticals(normalized)
     normalized = normalize_conjunctions(normalized)
     normalized = normalize_known_title_variants(normalized)
     normalized = normalize_punctuation_spacing(normalized)
@@ -237,10 +239,13 @@ def remove_apprenticeship_terms(job_title: str) -> str:
     return normalized
 
 
-def remove_parenthetical_qualifiers(job_title: str) -> str:
-    """Remove bracketed qualifiers from the display title."""
+def remove_empty_parentheticals(job_title: str) -> str:
+    """
+    Remove empty parentheses left behind after apprenticeship wording
+    has been removed.
+    """
     return re.sub(
-        r"\s*\([^)]*\)",
+        r"\s*\(\s*\)",
         "",
         job_title,
     )
