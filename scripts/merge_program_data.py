@@ -18,6 +18,7 @@ PROGRAM_DESCRIPTIONS_CSV_PATH = Path(
     "job-descriptions/job-descriptions-programs.csv"
 )
 ONET_ROOT = Path("onet")
+SOC_CODE_MAPPINGS_PATH = Path("programs/soc-code-mappings.csv")
 SCHEMA_PATH = Path("schemas/program-group.schema.json")
 
 OUTPUT_ROOT = Path("programs/out")
@@ -46,6 +47,10 @@ def main() -> None:
     require_file(
         PROGRAM_DESCRIPTIONS_CSV_PATH,
         "program descriptions CSV",
+    )
+    require_file(
+        SOC_CODE_MAPPINGS_PATH,
+        "SOC code mappings CSV",
     )
     require_file(
         SCHEMA_PATH,
@@ -80,21 +85,34 @@ def main() -> None:
         )
     )
 
+    try:
+        soc_code_mappings = (
+            load_soc_code_mappings(
+                SOC_CODE_MAPPINGS_PATH
+            )
+        )
+    except ValueError as exc:
+        raise SystemExit(
+            f"Could not load SOC code mappings: "
+            f"{exc}"
+        ) from exc
+
     merged_groups: list[dict[str, Any]] = []
     used_program_aks: set[int] = set()
 
     missing_onet: list[
-        tuple[str, str]
+        tuple[str, str, str]
     ] = []
 
     title_mismatches: list[
-        tuple[str, str, str]
+        tuple[str, str, str, str]
     ] = []
 
     merge_errors: list[str] = []
 
     total_program_count = 0
     total_trade_count = 0
+    mapped_onet_count = 0
 
     for group in program_groups:
         soc_code = read_required_string(
@@ -106,9 +124,19 @@ def main() -> None:
             "socTitle",
         )
 
+        onet_soc_code = (
+            soc_code_mappings.get(
+                soc_code,
+                soc_code,
+            )
+        )
+
+        if onet_soc_code != soc_code:
+            mapped_onet_count += 1
+
         onet = load_onet_data(
             ONET_ROOT,
-            soc_code,
+            onet_soc_code,
         )
 
         if onet is None:
@@ -116,6 +144,7 @@ def main() -> None:
                 (
                     soc_code,
                     soc_title,
+                    onet_soc_code,
                 )
             )
             continue
@@ -131,6 +160,7 @@ def main() -> None:
             title_mismatches.append(
                 (
                     soc_code,
+                    onet_soc_code,
                     soc_title,
                     onet_title,
                 )
@@ -196,7 +226,8 @@ def main() -> None:
     if missing_onet:
         merge_errors.append(
             f"{len(missing_onet)} SOC group(s) have "
-            "no O*NET file."
+            "no O*NET file after applying SOC code "
+            "mappings."
         )
 
     if unused_description_aks:
@@ -235,11 +266,24 @@ def main() -> None:
                 file=sys.stderr,
             )
 
-            for soc_code, soc_title in missing_onet:
-                print(
-                    f"  - {soc_code} — {soc_title}",
-                    file=sys.stderr,
-                )
+            for (
+                soc_code,
+                soc_title,
+                onet_soc_code,
+            ) in missing_onet:
+                if onet_soc_code == soc_code:
+                    print(
+                        f"  - {soc_code} — "
+                        f"{soc_title}",
+                        file=sys.stderr,
+                    )
+                else:
+                    print(
+                        f"  - {soc_code} -> "
+                        f"{onet_soc_code} — "
+                        f"{soc_title}",
+                        file=sys.stderr,
+                    )
 
         print(
             "",
@@ -287,6 +331,10 @@ def main() -> None:
         f"{len(merged_groups)}"
     )
     print(
+        f"  O*NET profiles via mapping: "
+        f"{mapped_onet_count}"
+    )
+    print(
         f"  O*NET title differences:    "
         f"{len(title_mismatches)}"
     )
@@ -299,12 +347,20 @@ def main() -> None:
 
         for (
             soc_code,
+            onet_soc_code,
             program_title,
             onet_title,
         ) in title_mismatches:
-            print(
-                f"  {soc_code}"
-            )
+            if soc_code == onet_soc_code:
+                print(
+                    f"  {soc_code}"
+                )
+            else:
+                print(
+                    f"  {soc_code} -> "
+                    f"{onet_soc_code}"
+                )
+
             print(
                 f"    Program title: "
                 f"{program_title}"
@@ -318,7 +374,6 @@ def main() -> None:
     print(
         f"Updated: {OUTPUT_ROOT}/"
     )
-
 
 def require_file(
     path: Path,
@@ -363,6 +418,103 @@ def load_json_object(
 
     return data
 
+
+def load_soc_code_mappings(
+    path: Path,
+) -> dict[str, str]:
+    """
+    Load reviewed source-SOC to current O*NET-SOC mappings.
+
+    Rows without a target SOC code are ignored. Those represent codes
+    that have not been resolved to a usable current O*NET occupation.
+    """
+    with path.open(
+        newline="",
+        encoding="utf-8-sig",
+    ) as csv_file:
+        reader = csv.DictReader(
+            csv_file
+        )
+
+        if reader.fieldnames:
+            reader.fieldnames = [
+                field.strip()
+                for field in reader.fieldnames
+            ]
+
+        required_fields = {
+            "sourceSocCode",
+            "targetSocCode",
+        }
+
+        fieldnames = set(
+            reader.fieldnames or []
+        )
+
+        missing_fields = (
+            required_fields
+            - fieldnames
+        )
+
+        if missing_fields:
+            missing = ", ".join(
+                sorted(
+                    missing_fields
+                )
+            )
+
+            raise ValueError(
+                f"{path} is missing required "
+                f"field(s): {missing}"
+            )
+
+        mappings: dict[str, str] = {}
+
+        for row_number, row in enumerate(
+            reader,
+            start=2,
+        ):
+            source_soc_code = (
+                row.get("sourceSocCode")
+                or ""
+            ).strip()
+
+            target_soc_code = (
+                row.get("targetSocCode")
+                or ""
+            ).strip()
+
+            if not source_soc_code:
+                raise ValueError(
+                    f"{path} row {row_number} "
+                    "has no sourceSocCode."
+                )
+
+            if not target_soc_code:
+                continue
+
+            existing_target = mappings.get(
+                source_soc_code
+            )
+
+            if (
+                existing_target is not None
+                and existing_target
+                != target_soc_code
+            ):
+                raise ValueError(
+                    f"{path} contains conflicting "
+                    f"mappings for "
+                    f"{source_soc_code}: "
+                    f"{existing_target!r} and "
+                    f"{target_soc_code!r}."
+                )
+
+            mappings[
+                source_soc_code
+            ] = target_soc_code
+
+    return mappings
 
 def read_required_string(
     data: dict[str, Any],

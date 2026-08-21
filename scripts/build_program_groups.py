@@ -230,6 +230,7 @@ def main() -> None:
         print_failure_report(
             source_row_count=len(source_rows),
             inactive_count=inactive_count,
+            out_of_state_count=out_of_state_count,
             soc_warnings=soc_warnings,
             errors=errors,
         )
@@ -967,6 +968,7 @@ def print_failure_report(
     *,
     source_row_count: int,
     inactive_count: int,
+    out_of_state_count: int,
     soc_warnings: list[str],
     errors: list[str],
 ) -> None:
@@ -985,12 +987,14 @@ def print_failure_report(
         f"{inactive_count}"
     )
     print(
-        f"  Excluded out-of-state programs:    "
-        f"{out_of_state_count}"
+        f"  Excluded inactive programs:        "
+        f"{inactive_count}",
+        file=sys.stderr,
     )
     print(
-        f"  Excluded without usable SOC code:  "
-        f"{len(soc_warnings)}"
+        f"  Excluded out-of-state programs:    "
+        f"{out_of_state_count}",
+        file=sys.stderr,
     )
 
     if soc_warnings:
