@@ -172,6 +172,7 @@ def normalize_prompt_job_title(job_title: str) -> str:
     normalized = job_title.strip()
 
     normalized = remove_apprenticeship_terms(normalized)
+    normalized = remove_empty_parentheticals(normalized)
     normalized = normalize_conjunctions(normalized)
     normalized = normalize_punctuation_spacing(normalized)
 
@@ -312,9 +313,16 @@ def normalize_known_title_variants(job_title: str) -> str:
 
 def normalize_punctuation_spacing(job_title: str) -> str:
     """
-    Clean whitespace, comma spacing, slash spacing, and dangling punctuation.
+    Clean whitespace, parenthetical spacing, comma spacing, slash spacing,
+    and dangling punctuation.
     """
     normalized = job_title
+
+    normalized = re.sub(
+        r"(?<=\S)\(",
+        " (",
+        normalized,
+    )
 
     normalized = re.sub(
         r"\s*/\s*",
