@@ -6,9 +6,26 @@
       "filename": "area-sheet-metal-workers-jatc-lu112-elmira-0.html",
       "url": "https://dol.ny.gov/news/area-sheet-metal-workers-jatc-lu112-elmira-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "area-sheet-metal-workers-jatc-lu112-elmira.html": {
+      "filename": "area-sheet-metal-workers-jatc-lu112-elmira.html",
+      "url": "https://dol.ny.gov/ap/area-sheet-metal-workers-jatc-lu112-elmira",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
+    },
+    "asbestos-lead-hazardous-waste-laborers-local-78-0.html": {
+      "filename": "asbestos-lead-hazardous-waste-laborers-local-78-0.html",
+      "url": "https://dol.ny.gov/ap/asbestos-lead-hazardous-waste-laborers-local-78-0",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "asbestos-workers-jac-lu-91-0.html": {
       "filename": "asbestos-workers-jac-lu-91-0.html",
@@ -25,7 +42,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "boilermakers-northeast-local-5.html": {
       "filename": "boilermakers-northeast-local-5.html",
@@ -40,17 +57,26 @@
       "filename": "boilermakers-northeastern-jac-local-5-zone-7-0.html",
       "url": "https://dol.ny.gov/news/boilermakers-northeastern-jac-local-5-zone-7-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "boilermakers-northeastern-jac-local-5-zone-7.html": {
+      "filename": "boilermakers-northeastern-jac-local-5-zone-7.html",
+      "url": "https://dol.ny.gov/ap/boilermakers-northeastern-jac-local-5-zone-7",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "boilermakers-northeastern-jac-lu-5-zone-197.html": {
       "filename": "boilermakers-northeastern-jac-lu-5-zone-197.html",
       "url": "https://dol.ny.gov/news/boilermakers-northeastern-jac-lu-5-zone-197",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "bricklayers-allied-craftworkers-jac-local-2-oswego-0.html": {
       "filename": "bricklayers-allied-craftworkers-jac-local-2-oswego-0.html",
@@ -58,7 +84,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "bricklayers-allied-craftworkers-jac-local-2-syracuse-1.html": {
       "filename": "bricklayers-allied-craftworkers-jac-local-2-syracuse-1.html",
@@ -66,15 +92,15 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "bricklayers-allied-craftworkers-jac-local-2-utica-0.html": {
       "filename": "bricklayers-allied-craftworkers-jac-local-2-utica-0.html",
       "url": "https://dol.ny.gov/news/bricklayers-allied-craftworkers-jac-local-2-utica-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "bricklayers-allied-craftworkers-jac-local-union-1.html": {
       "filename": "bricklayers-allied-craftworkers-jac-local-union-1.html",
@@ -91,47 +117,74 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "bricklayers-allied-craftworkers-local-2-ogdensburg-0.html": {
       "filename": "bricklayers-allied-craftworkers-local-2-ogdensburg-0.html",
       "url": "https://dol.ny.gov/news/bricklayers-allied-craftworkers-local-2-ogdensburg-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "bricklayers-allied-craftworkers-local-3-rochester-1.html": {
       "filename": "bricklayers-allied-craftworkers-local-3-rochester-1.html",
       "url": "https://dol.ny.gov/news/bricklayers-allied-craftworkers-local-3-rochester-1",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=7",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
+    },
+    "bricklayers-allied-craftworkers-local-3-rochester-2.html": {
+      "filename": "bricklayers-allied-craftworkers-local-3-rochester-2.html",
+      "url": "https://dol.ny.gov/ap/bricklayers-allied-craftworkers-local-3-rochester-2",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "capital-sheet-metal-workers-jatc-local-83-0.html": {
       "filename": "capital-sheet-metal-workers-jatc-local-83-0.html",
       "url": "https://dol.ny.gov/news/capital-sheet-metal-workers-jatc-local-83-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "capital-sheet-metal-workers-jatc-local83.html": {
+      "filename": "capital-sheet-metal-workers-jatc-local83.html",
+      "url": "https://dol.ny.gov/ap/capital-sheet-metal-workers-jatc-local83",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "carpenters-jatc-nyc-vicinity-2.html": {
       "filename": "carpenters-jatc-nyc-vicinity-2.html",
       "url": "https://dol.ny.gov/news/carpenters-jatc-nyc-vicinity-2",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=7",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
     },
     "carpenters-jatc-nyc-vicinity-3.html": {
       "filename": "carpenters-jatc-nyc-vicinity-3.html",
       "url": "https://dol.ny.gov/news/carpenters-jatc-nyc-vicinity-3",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "carpenters-jatc-nyc-vicinity.html": {
+      "filename": "carpenters-jatc-nyc-vicinity.html",
+      "url": "https://dol.ny.gov/ap/carpenters-jatc-nyc-vicinity",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "central-new-york-electrical-training-alliance-0.html": {
       "filename": "central-new-york-electrical-training-alliance-0.html",
@@ -146,9 +199,18 @@
       "filename": "central-new-york-electrical-training-alliance-1.html",
       "url": "https://dol.ny.gov/news/central-new-york-electrical-training-alliance-1",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "central-new-york-electrical-training-alliance.html": {
+      "filename": "central-new-york-electrical-training-alliance.html",
+      "url": "https://dol.ny.gov/ap/central-new-york-electrical-training-alliance",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "construction-general-building-laborers-lu-79.html": {
       "filename": "construction-general-building-laborers-lu-79.html",
@@ -163,9 +225,18 @@
       "filename": "construction-general-laborers-local-union-633-0.html",
       "url": "https://dol.ny.gov/news/construction-general-laborers-local-union-633-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "construction-general-laborers-local-union-633.html": {
+      "filename": "construction-general-laborers-local-union-633.html",
+      "url": "https://dol.ny.gov/ap/construction-general-laborers-local-union-633",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "eastern-millwright-regional-council-apprenticeship-training-fund.html": {
       "filename": "eastern-millwright-regional-council-apprenticeship-training-fund.html",
@@ -191,7 +262,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "electricians-jac-binghamton-ibew-lu-325-1.html": {
       "filename": "electricians-jac-binghamton-ibew-lu-325-1.html",
@@ -199,7 +270,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "electricians-jac-binghamton-ibew-lu-325.html": {
       "filename": "electricians-jac-binghamton-ibew-lu-325.html",
@@ -213,10 +284,10 @@
     "electricians-jac-buffalo-lu-41-0.html": {
       "filename": "electricians-jac-buffalo-lu-41-0.html",
       "url": "https://dol.ny.gov/news/electricians-jac-buffalo-lu-41-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=7",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "electricians-jac-buffalo-lu-41-1.html": {
       "filename": "electricians-jac-buffalo-lu-41-1.html",
@@ -224,31 +295,49 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
       "archived": false,
       "first_seen_at": "2026-08-10T15:22:19Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "electricians-jac-elmira-lu-139-0.html": {
       "filename": "electricians-jac-elmira-lu-139-0.html",
       "url": "https://dol.ny.gov/news/electricians-jac-elmira-lu-139-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "electricians-jac-elmira-lu-139.html": {
+      "filename": "electricians-jac-elmira-lu-139.html",
+      "url": "https://dol.ny.gov/ap/electricians-jac-elmira-lu-139",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "electricians-jac-ithaca-241-0.html": {
       "filename": "electricians-jac-ithaca-241-0.html",
       "url": "https://dol.ny.gov/news/electricians-jac-ithaca-241-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "electricians-jac-ithaca-241.html": {
+      "filename": "electricians-jac-ithaca-241.html",
+      "url": "https://dol.ny.gov/ap/electricians-jac-ithaca-241",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "electricians-jac-watertown-local-910-0.html": {
       "filename": "electricians-jac-watertown-local-910-0.html",
       "url": "https://dol.ny.gov/news/electricians-jac-watertown-local-910-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "elevator-constructors-local-1-jac.html": {
       "filename": "elevator-constructors-local-1-jac.html",
@@ -272,9 +361,10 @@
       "filename": "finishing-trades-institute-new-york-5.html",
       "url": "https://dol.ny.gov/news/finishing-trades-institute-new-york-5",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
     },
     "finishing-trades-institute-new-york-6.html": {
       "filename": "finishing-trades-institute-new-york-6.html",
@@ -300,7 +390,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "finishing-trades-institute-western-central-ny-buffalo.html": {
       "filename": "finishing-trades-institute-western-central-ny-buffalo.html",
@@ -308,15 +398,15 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "finishing-trades-institute-western-central-ny-ithaca.html": {
       "filename": "finishing-trades-institute-western-central-ny-ithaca.html",
       "url": "https://dol.ny.gov/news/finishing-trades-institute-western-central-ny-ithaca",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "finishing-trades-institute-western-central-ny-rochester.html": {
       "filename": "finishing-trades-institute-western-central-ny-rochester.html",
@@ -324,15 +414,15 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "finishing-trades-institute-western-central-ny-syracuse.html": {
       "filename": "finishing-trades-institute-western-central-ny-syracuse.html",
       "url": "https://dol.ny.gov/news/finishing-trades-institute-western-central-ny-syracuse",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "general-building-laborers-local66-0.html": {
       "filename": "general-building-laborers-local66-0.html",
@@ -340,7 +430,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
       "archived": false,
       "first_seen_at": "2026-08-21T17:12:29Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "general-building-laborers-local66.html": {
       "filename": "general-building-laborers-local66.html",
@@ -355,41 +445,60 @@
       "filename": "geneva-electrical-jatc-local-840-0.html",
       "url": "https://dol.ny.gov/news/geneva-electrical-jatc-local-840-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
     },
     "geneva-electrical-jatc-local-840-1.html": {
       "filename": "geneva-electrical-jatc-local-840-1.html",
       "url": "https://dol.ny.gov/news/geneva-electrical-jatc-local-840-1",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-30T14:28:41Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "heat-frost-insulation-allied-workers-lu-26-0.html": {
       "filename": "heat-frost-insulation-allied-workers-lu-26-0.html",
       "url": "https://dol.ny.gov/news/heat-frost-insulation-allied-workers-lu-26-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "heat-frost-insulation-allied-workers-lu26.html": {
+      "filename": "heat-frost-insulation-allied-workers-lu26.html",
+      "url": "https://dol.ny.gov/ap/heat-frost-insulation-allied-workers-lu26",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "high-rise-concrete-carpenters-jatc-new-york-city-1.html": {
       "filename": "high-rise-concrete-carpenters-jatc-new-york-city-1.html",
       "url": "https://dol.ny.gov/news/high-rise-concrete-carpenters-jatc-new-york-city-1",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "high-rise-concrete-carpenters-jatc-new-york-city.html": {
+      "filename": "high-rise-concrete-carpenters-jatc-new-york-city.html",
+      "url": "https://dol.ny.gov/ap/high-rise-concrete-carpenters-jatc-new-york-city",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "international-union-bricklayers-allied-craftsmen-local-3-ny-ithaca-chapter-0.html": {
       "filename": "international-union-bricklayers-allied-craftsmen-local-3-ny-ithaca-chapter-0.html",
       "url": "https://dol.ny.gov/news/international-union-bricklayers-allied-craftsmen-local-3-ny-ithaca-chapter-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "international-union-operating-engineers-local-158-training-fund-district-106-0.html": {
       "filename": "international-union-operating-engineers-local-158-training-fund-district-106-0.html",
@@ -406,7 +515,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
       "archived": false,
       "first_seen_at": "2026-08-10T15:22:19Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "iron-workers-local-union-6.html": {
       "filename": "iron-workers-local-union-6.html",
@@ -414,7 +523,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
       "archived": false,
       "first_seen_at": "2026-07-17T20:04:50Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "ironworkers-jac-syracuse-lu-60-0.html": {
       "filename": "ironworkers-jac-syracuse-lu-60-0.html",
@@ -422,7 +531,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "ironworkers-jatc-lu-417-newburgh.html": {
       "filename": "ironworkers-jatc-lu-417-newburgh.html",
@@ -430,15 +539,24 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "ironworkers-lu-33-jac-0.html": {
       "filename": "ironworkers-lu-33-jac-0.html",
       "url": "https://dol.ny.gov/news/ironworkers-lu-33-jac-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "ironworkers-lu-33-jac.html": {
+      "filename": "ironworkers-lu-33-jac.html",
+      "url": "https://dol.ny.gov/ap/ironworkers-lu-33-jac",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "iuoe-lu-158-training-fund-district-545.html": {
       "filename": "iuoe-lu-158-training-fund-district-545.html",
@@ -449,21 +567,47 @@
       "last_seen_at": "2026-06-18T16:43:20Z",
       "archived_at": "2026-06-26T16:57:30Z"
     },
+    "jac-ibew-electrical-local-3.html": {
+      "filename": "jac-ibew-electrical-local-3.html",
+      "url": "https://dol.ny.gov/ap/jac-ibew-electrical-local-3",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "archived": true,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-15T16:33:31Z",
+      "archived_at": "2026-09-18T18:51:59Z"
+    },
+    "jac-ibew-electrical-local.html": {
+      "filename": "jac-ibew-electrical-local.html",
+      "url": "https://dol.ny.gov/ap/jac-ibew-electrical-local",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "archived": false,
+      "first_seen_at": "2026-09-18T18:51:50Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
+    },
     "jatc-tile-marble-terrazzo-bac-lu-7.html": {
       "filename": "jatc-tile-marble-terrazzo-bac-lu-7.html",
       "url": "https://dol.ny.gov/news/jatc-tile-marble-terrazzo-bac-lu-7",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "laborers-international-union-north-america-local-785-jatc-0.html": {
       "filename": "laborers-international-union-north-america-local-785-jatc-0.html",
       "url": "https://dol.ny.gov/news/laborers-international-union-north-america-local-785-jatc-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "laborers-international-union-north-america-local-785-jatc.html": {
+      "filename": "laborers-international-union-north-america-local-785-jatc.html",
+      "url": "https://dol.ny.gov/ap/laborers-international-union-north-america-local-785-jatc",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "liuna-local-731-training-fund.html": {
       "filename": "liuna-local-731-training-fund.html",
@@ -477,10 +621,10 @@
     "north-atlantic-state-carpenters-training-fund-0.html": {
       "filename": "north-atlantic-state-carpenters-training-fund-0.html",
       "url": "https://dol.ny.gov/news/north-atlantic-state-carpenters-training-fund-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "north-atlantic-states-carpenters-training-fund-10.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-10.html",
@@ -488,7 +632,15 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
+    },
+    "north-atlantic-states-carpenters-training-fund-11.html": {
+      "filename": "north-atlantic-states-carpenters-training-fund-11.html",
+      "url": "https://dol.ny.gov/ap/north-atlantic-states-carpenters-training-fund-11",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "north-atlantic-states-carpenters-training-fund-2.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-2.html",
@@ -511,18 +663,19 @@
     "north-atlantic-states-carpenters-training-fund-4.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-4.html",
       "url": "https://dol.ny.gov/news/north-atlantic-states-carpenters-training-fund-4",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=7",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "north-atlantic-states-carpenters-training-fund-5.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-5.html",
       "url": "https://dol.ny.gov/news/north-atlantic-states-carpenters-training-fund-5",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
     },
     "north-atlantic-states-carpenters-training-fund-6.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-6.html",
@@ -530,7 +683,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "north-atlantic-states-carpenters-training-fund-7.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-7.html",
@@ -538,7 +691,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "north-atlantic-states-carpenters-training-fund-8.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-8.html",
@@ -546,15 +699,15 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "north-atlantic-states-carpenters-training-fund-9.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-9.html",
       "url": "https://dol.ny.gov/news/north-atlantic-states-carpenters-training-fund-9",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "north-atlantic-states-carpenters-training-fund-formerly-known-new-england-carpenters.html": {
       "filename": "north-atlantic-states-carpenters-training-fund-formerly-known-new-england-carpenters.html",
@@ -565,21 +718,38 @@
       "last_seen_at": "2026-06-11T22:27:10Z",
       "archived_at": "2026-06-18T16:43:02Z"
     },
+    "north-atlantic-states-carpenters-training-fund.html": {
+      "filename": "north-atlantic-states-carpenters-training-fund.html",
+      "url": "https://dol.ny.gov/ap/north-atlantic-states-carpenters-training-fund",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
+    },
     "plumbers-and-pipefitters-binghamton-lu-112-northern-zone-0.html": {
       "filename": "plumbers-and-pipefitters-binghamton-lu-112-northern-zone-0.html",
       "url": "https://dol.ny.gov/news/plumbers-and-pipefitters-binghamton-lu-112-northern-zone-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "plumbers-and-pipefitters-binghamton-lu-112-northern-zone.html": {
+      "filename": "plumbers-and-pipefitters-binghamton-lu-112-northern-zone.html",
+      "url": "https://dol.ny.gov/ap/plumbers-and-pipefitters-binghamton-lu-112-northern-zone",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "plumbers-and-pipefitters-binghamton-lu-112-southern-zone-0.html": {
       "filename": "plumbers-and-pipefitters-binghamton-lu-112-southern-zone-0.html",
       "url": "https://dol.ny.gov/news/plumbers-and-pipefitters-binghamton-lu-112-southern-zone-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "plumbers-local-1-jac.html": {
       "filename": "plumbers-local-1-jac.html",
@@ -596,15 +766,15 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "plumbers-steamfitters-jatc-lu-81-1.html": {
       "filename": "plumbers-steamfitters-jatc-lu-81-1.html",
       "url": "https://dol.ny.gov/news/plumbers-steamfitters-jatc-lu-81-1",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "plumbers-steamfitters-local-union-7-jac.html": {
       "filename": "plumbers-steamfitters-local-union-7-jac.html",
@@ -612,7 +782,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "plumbers-steamfitters-lu-22-jac-western-ny-2.html": {
       "filename": "plumbers-steamfitters-lu-22-jac-western-ny-2.html",
@@ -620,31 +790,49 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "plumbers-steamfitters-lu-22-jac-western-ny-3.html": {
       "filename": "plumbers-steamfitters-lu-22-jac-western-ny-3.html",
       "url": "https://dol.ny.gov/news/plumbers-steamfitters-lu-22-jac-western-ny-3",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
     },
     "plumbers-steamfitters-lu-22-jac-western-ny-4.html": {
       "filename": "plumbers-steamfitters-lu-22-jac-western-ny-4.html",
       "url": "https://dol.ny.gov/news/plumbers-steamfitters-lu-22-jac-western-ny-4",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "plumbers-steamfitters-lu-22-jac-western-ny.html": {
+      "filename": "plumbers-steamfitters-lu-22-jac-western-ny.html",
+      "url": "https://dol.ny.gov/ap/plumbers-steamfitters-lu-22-jac-western-ny",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
+    },
+    "plumbers-steamfitters-lu-22-jac-western-ny1.html": {
+      "filename": "plumbers-steamfitters-lu-22-jac-western-ny1.html",
+      "url": "https://dol.ny.gov/ap/plumbers-steamfitters-lu-22-jac-western-ny1",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "plumbing-and-heating-jatc-rochester-lu-13-0.html": {
       "filename": "plumbing-and-heating-jatc-rochester-lu-13-0.html",
       "url": "https://dol.ny.gov/news/plumbing-and-heating-jatc-rochester-lu-13-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "rochester-electrical-jatc-lu-86-1.html": {
       "filename": "rochester-electrical-jatc-lu-86-1.html",
@@ -652,23 +840,24 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "rochester-laborers-lu-435-jatc.html": {
       "filename": "rochester-laborers-lu-435-jatc.html",
       "url": "https://dol.ny.gov/news/rochester-laborers-lu-435-jatc",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "rondout-electric-inc.html": {
       "filename": "rondout-electric-inc.html",
       "url": "https://dol.ny.gov/news/rondout-electric-inc",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=7",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
     },
     "roofers-jac-capital-district-local-241-0.html": {
       "filename": "roofers-jac-capital-district-local-241-0.html",
@@ -676,7 +865,7 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
       "archived": false,
       "first_seen_at": "2026-08-21T17:12:29Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "roofers-jac-capital-district-local-241.html": {
       "filename": "roofers-jac-capital-district-local-241.html",
@@ -684,47 +873,83 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=6",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "roofers-jac-syracuse-local-195-0.html": {
       "filename": "roofers-jac-syracuse-local-195-0.html",
       "url": "https://dol.ny.gov/news/roofers-jac-syracuse-local-195-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "roofers-jac-syracuse-local-195.html": {
+      "filename": "roofers-jac-syracuse-local-195.html",
+      "url": "https://dol.ny.gov/ap/roofers-jac-syracuse-local-195",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "roofers-local-203-jac-0.html": {
       "filename": "roofers-local-203-jac-0.html",
       "url": "https://dol.ny.gov/news/roofers-local-203-jac-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "roofers-local-203-jac.html": {
+      "filename": "roofers-local-203-jac.html",
+      "url": "https://dol.ny.gov/ap/roofers-local-203-jac",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=5",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "roofing-industry-jatc-rochester-local-22-0.html": {
       "filename": "roofing-industry-jatc-rochester-local-22-0.html",
       "url": "https://dol.ny.gov/news/roofing-industry-jatc-rochester-local-22-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "roofing-industry-jatc-rochester-local-22.html": {
+      "filename": "roofing-industry-jatc-rochester-local-22.html",
+      "url": "https://dol.ny.gov/ap/roofing-industry-jatc-rochester-local-22",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=4",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "sheet-metal-jatc-rochester-lu-46-0.html": {
       "filename": "sheet-metal-jatc-rochester-lu-46-0.html",
       "url": "https://dol.ny.gov/news/sheet-metal-jatc-rochester-lu-46-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "sheet-metal-jatc-rochester-lu46.html": {
+      "filename": "sheet-metal-jatc-rochester-lu46.html",
+      "url": "https://dol.ny.gov/ap/sheet-metal-jatc-rochester-lu46",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "sheetmetal-workers-jac-syracuse-58-0.html": {
       "filename": "sheetmetal-workers-jac-syracuse-58-0.html",
       "url": "https://dol.ny.gov/news/sheetmetal-workers-jac-syracuse-58-0",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "sheetmetal-workers-jac-syracuse-58.html": {
       "filename": "sheetmetal-workers-jac-syracuse-58.html",
@@ -739,9 +964,26 @@
       "filename": "southern-tier-laborers-local-621-0.html",
       "url": "https://dol.ny.gov/news/southern-tier-laborers-local-621-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "southern-tier-laborers-local-621.html": {
+      "filename": "southern-tier-laborers-local-621.html",
+      "url": "https://dol.ny.gov/ap/southern-tier-laborers-local-621",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
+    },
+    "thomas-shortman-training-scholarship-safety-fund-0.html": {
+      "filename": "thomas-shortman-training-scholarship-safety-fund-0.html",
+      "url": "https://dol.ny.gov/ap/thomas-shortman-training-scholarship-safety-fund-0",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "thomas-shortman-training-scholarship-safety-fund.html": {
       "filename": "thomas-shortman-training-scholarship-safety-fund.html",
@@ -756,9 +998,18 @@
       "filename": "united-union-roofers-waterproofers-jac-lu-154-0.html",
       "url": "https://dol.ny.gov/news/united-union-roofers-waterproofers-jac-lu-154-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
+    },
+    "united-union-roofers-waterproofers-jac-lu-154.html": {
+      "filename": "united-union-roofers-waterproofers-jac-lu-154.html",
+      "url": "https://dol.ny.gov/ap/united-union-roofers-waterproofers-jac-lu-154",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=3",
+      "archived": false,
+      "first_seen_at": "2026-09-15T16:33:31Z",
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "usis-electric-inc.html": {
       "filename": "usis-electric-inc.html",
@@ -766,23 +1017,24 @@
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=2",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "westchester-fairfield-jeatc-lu-3-ibew-0.html": {
       "filename": "westchester-fairfield-jeatc-lu-3-ibew-0.html",
       "url": "https://dol.ny.gov/news/westchester-fairfield-jeatc-lu-3-ibew-0",
       "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=7",
-      "archived": false,
+      "archived": true,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-08T17:53:58Z",
+      "archived_at": "2026-09-15T16:33:39Z"
     },
     "westchester-fairfield-jeatc-lu-3-ibew-1.html": {
       "filename": "westchester-fairfield-jeatc-lu-3-ibew-1.html",
       "url": "https://dol.ny.gov/news/westchester-fairfield-jeatc-lu-3-ibew-1",
-      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements",
+      "listing_page_url": "https://dol.ny.gov/apprenticeship/apprenticeship-announcements?page=1",
       "archived": false,
       "first_seen_at": "2026-06-11T22:27:10Z",
-      "last_seen_at": "2026-09-08T17:53:58Z"
+      "last_seen_at": "2026-09-18T19:27:34Z"
     },
     "westchester-putnam-construction-craft-laborers-lu-60.html": {
       "filename": "westchester-putnam-construction-craft-laborers-lu-60.html",
@@ -794,9 +1046,9 @@
       "archived_at": "2026-06-18T16:43:02Z"
     }
   },
-  "last_run_started_at": "2026-09-08T17:53:58Z",
-  "last_run_finished_at": "2026-09-08T17:54:06Z",
+  "last_run_started_at": "2026-09-18T19:27:34Z",
+  "last_run_finished_at": "2026-09-18T19:27:42Z",
   "last_run_reason": "finished",
   "current_count": 73,
-  "archived_count": 23
+  "archived_count": 51
 }

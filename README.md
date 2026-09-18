@@ -158,7 +158,14 @@ When the audit looks clean, apply the SOC codes to the JSON files:
 poetry run python scripts/apply_posting_soc_codes.py --mode apply
 ```
 
-**Step 7 — Fetch O\*NET data:** Download the full O\*NET occupation profile for each SOC code that appears in your postings and save it to `onet/<SOC_CODE>.json`. Pass one or more O\*NET-SOC codes as arguments. Requires `ONET_API_KEY` in your `.env`.
+**Step 7 — Audit and fetch O\*NET data:** Check that every O\*NET-SOC
+code used by the current postings has a corresponding occupation file.
+
+```bash
+poetry run python scripts/audit_posting_onet.py
+```
+
+Then download the full O\*NET occupation profile for each SOC code that appears in your postings and save it to `onet/<SOC_CODE>.json`. Pass one or more O\*NET-SOC codes as arguments. Requires `ONET_API_KEY` in your `.env`.
 
 ```bash
 poetry run python scripts/fetch_onet_occupation.py 47-2111.00 51-7011.00
