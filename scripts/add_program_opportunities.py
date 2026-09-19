@@ -13,7 +13,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 PROGRAM_OUTPUT_ROOT = Path("programs/out")
 PROGRAM_OPPORTUNITIES_CSV_PATH = Path(
-    "programs/ra-programs-opportunities.csv"
+    "programs/ra-programs-opportunities-verified.csv"
 )
 OPPORTUNITY_OUTPUT_ROOT = Path("out")
 
@@ -27,6 +27,7 @@ BACKUP_OUTPUT_ROOT = Path(
 REQUIRED_LINK_FIELDS = {
     "PROGRAM_AK",
     "POSTING_URL",
+    "STATUS",
 }
 
 SOC_MATCH_OVERRIDES = {
@@ -260,7 +261,7 @@ def main() -> None:
         f"{total_program_count}"
     )
     print(
-        f"  Link rows read:                 "
+        f"  Verified 200 links processed:   "
         f"{len(link_rows)}"
     )
     print(
@@ -911,10 +912,11 @@ def load_link_rows(
     tuple[int, str]
 ]:
     """
-    Load PROGRAM_AK -> POSTING_URL relationships.
+    Load verified PROGRAM_AK -> POSTING_URL relationships.
 
-    Missing opportunity output is handled later and
-    is not considered a malformed CSV row.
+    Only rows with STATUS=200 are eligible for linking.
+    Redirect, error, forbidden, and other audit rows are
+    retained in the verified CSV but ignored here.
     """
     with path.open(
         newline="",
@@ -971,6 +973,17 @@ def load_link_rows(
                 or ""
             ).strip()
 
+            status = (
+                raw_row.get("STATUS")
+                or ""
+            ).strip()
+
+            # The verified CSV contains the complete
+            # URL trace. Only successful URLs are
+            # candidates for program linking.
+            if status != "200":
+                continue
+
             if not raw_program_ak:
                 errors.append(
                     f"{path} row {row_number} "
@@ -1014,8 +1027,8 @@ def load_link_rows(
 
     if errors:
         print(
-            "Program-opportunity link data failed "
-            "validation:",
+            "Verified program-opportunity link data "
+            "failed validation:",
             file=sys.stderr,
         )
 

@@ -331,23 +331,38 @@ onet           # selected O*NET occupation profile sections
 trades         # trade groups with descriptions and individual programs
 ```
 
-O*NET data is stored once at the SOC-group level, while generated descriptions are stored once per trade group. 
+O*NET data is stored once at the SOC-group level, while generated descriptions are stored once per trade group.
 
-Each individual program also receives an empty `opportunities` array for recruitment data added in the next step.
+Each individual program also receives an empty `opportunities` array for recruitment data added in the next steps.
 
-**Program Step 7 — Add linked opportunities:** Read `programs/ra-programs-opportunities.csv` and connect registered programs to matching recruitment opportunities from `out/*.json`.
+**Program Step 7 — Verify linked opportunity URLs:** Check the posting URLs in `programs/ra-programs-opportunities.csv` against the current opportunity data and follow any redirects.
+
+```bash
+poetry run python scripts/verify_program_opportunity_urls.py
+```
+
+The results are written to:
+
+```text
+programs/ra-programs-opportunities-verified.csv
+```
+
+The verified CSV keeps each checked URL and its HTTP status. Redirect targets are written on the following row so the full URL history remains auditable.
+
+**Program Step 8 — Add linked opportunities:** Read the verified relationship data and connect registered programs to matching recruitment opportunities from `out/*.json`.
 
 ```bash
 poetry run python scripts/add_program_opportunities.py
 ```
 
-For each linked posting that exists in the current opportunity output, the script copies the complete `posting` object into the registered program's `opportunities` array. Links are matched by `PROGRAM_AK`, posting URL, and compatible SOC code.
+Only rows with `STATUS=200` are used. Links are matched by `PROGRAM_AK`, posting URL, and compatible SOC code. For each match, the complete `posting` object is copied into the registered program's `opportunities` array.
 
-Linked postings that are not present in the current `out/` data are reported but do not stop the update. The completed enriched program files remain under:
+The completed enriched program files remain under:
 
 ```text
 programs/out/<SOC_CODE>.json
 ```
+
 
 ## Output layout
 
@@ -359,10 +374,12 @@ out/               # final enriched opportunity records
 csv/               # CSV exports of opportunity posting data
 
 programs/          # registered apprenticeship program data
-  ra-program-data.csv       # source registered-program dataset
-  soc-code-mappings.csv     # reviewed obsolete/invalid SOC-code mappings
-  json/                      # normalized program groups, one file per SOC code
-  out/                       # final enriched program groups, one file per SOC code
+  ra-program-data.csv                     # source registered-program dataset
+  ra-programs-opportunities.csv           # source program-to-posting relationships
+  ra-programs-opportunities-verified.csv  # verified URLs and HTTP statuses
+  soc-code-mappings.csv                   # obsolete/invalid SOC-code mappings
+  json/                                   # un-enriched programs, grouped by SOC code
+  out/                                    # enriched programs, grouped by SOC code
 
 data/locations/    # region reference data and reviewed posting-region mappings
 reports/           # generated audit reports
